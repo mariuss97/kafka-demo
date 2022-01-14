@@ -9,6 +9,7 @@ node {
 		
 		dir(kafka-consumer){
 		sh './gradlew build'
+		}
 	   //sh ''' cd kafka-consumer
 	   //       ./gradlew build
 	   //'''
