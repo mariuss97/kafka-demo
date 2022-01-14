@@ -7,7 +7,7 @@ node {
     
     stage('Gradle Build') {
 		
-		dir(kafka-consumer){
+		dir("kafka-consumer"){
 		sh './gradlew build'
 		}
 	   //sh ''' cd kafka-consumer
