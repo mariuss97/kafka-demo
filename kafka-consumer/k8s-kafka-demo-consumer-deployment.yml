@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kafka-demo-consumer
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: kafka-demo-consumer
+  template:
+    metadata:
+      labels:
+        app: kafka-demo-consumer
+    spec:
+      containers:
+        - name: kafka-demo-consumer
+          image: mariuss97/kafka-demo-consumer:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8090
+          env:
+            - name: PORT
+              value: "8090"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kafka-demo-consumer
+spec:
+  type: NodePort
+  ports:
+    - port: 80
+      targetPort: 8090
+  selector:
+    app: kafka-demo-consumer
