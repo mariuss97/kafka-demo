@@ -7,8 +7,10 @@ node {
     
     stage('Gradle Build') {
 
-	   sh 'cd kafka-consumer'
-       sh './gradlew build'
+	   sh ''' cd kafka-consumer
+	          ./gradlew build
+	   '''
+       
 
     } 
     
