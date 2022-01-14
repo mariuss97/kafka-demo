@@ -19,7 +19,10 @@ node {
     
     stage("Docker build and tag"){
         sh 'docker version'
-        sh 'docker build -t kafka-demo-consumer -f kafka-consumer/Dockerfile .'
+		dir("kafka-consumer"){
+		sh 'docker build -t kafka-demo-consumer -f kafka-consumer/Dockerfile .'
+		}
+        //sh 'docker build -t kafka-demo-consumer -f kafka-consumer/Dockerfile .'
         sh 'docker image list'
         sh 'docker tag kafka-demo mariuss97/kafka-demo-consumer:latest'
     } 
