@@ -24,7 +24,7 @@ node {
 		}
         //sh 'docker build -t kafka-demo-consumer -f kafka-consumer/Dockerfile .'
         sh 'docker image list'
-        sh 'docker tag kafka-demo mariuss97/kafka-demo-consumer:latest'
+        sh 'docker tag kafka-demo-consumer mariuss97/kafka-demo-consumer:latest'
     } 
     
     stage("Docker Login"){
