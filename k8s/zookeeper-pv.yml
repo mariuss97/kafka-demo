@@ -8,4 +8,4 @@ spec:
   capacity:
     storage: 10Gi
   hostPath:
-    path: /home/vagrant/data/pv
+    path: /home/vagrant/data/pv/zookeeper-pv
