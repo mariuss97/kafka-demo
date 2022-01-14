@@ -3,6 +3,9 @@ kind: PersistentVolume
 metadata:
   name: kafka-pv
 spec:
-  storageClassName: ""
-  claimRef:
-    name: kafka-pvc
+  accessModes:
+    - ReadWriteOnce
+  capacity:
+    storage: 5Gi
+  hostPath:
+    path: /home/vagrant/data/pv
