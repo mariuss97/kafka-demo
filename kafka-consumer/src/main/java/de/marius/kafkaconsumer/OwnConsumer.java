@@ -22,7 +22,6 @@ public class OwnConsumer {
     @Value("${topic.name.consumer}")
     private String topicName;
     public static List<ConsumerRecord<String, String>> messages = new ArrayList<>();
-    public static Consumer kafkaConsumer;
 
     @KafkaListener(topics = "${topic.name.consumer}", groupId = "group_id", topicPartitions = {
             @TopicPartition(topic = "${topic.name.consumer}",
