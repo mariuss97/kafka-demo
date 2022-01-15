@@ -1,6 +1,6 @@
 package de.marius.kafkaproducer.controller;
 
-import de.marius.kafkaproducer.Producer;
+import de.marius.kafkaproducer.OwnProducer;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @RequestMapping(value = "/kafka")
 public class KafkaController {
-    private final Producer producer;
+    private final OwnProducer producer;
 
     @PostMapping(value = "/publish")
     public void send(@RequestParam("message") String message){
