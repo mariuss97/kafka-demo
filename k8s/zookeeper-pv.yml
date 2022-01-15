@@ -8,7 +8,6 @@ spec:
   capacity:
     storage: 10Gi
   volumeMode: Filesystem
-  storageClassName: local-storage
   local:
     path: /home/vagrant/data/pv/zookeeper-pv
   nodeAffinity:
