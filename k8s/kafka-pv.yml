@@ -11,3 +11,11 @@ spec:
   storageClassName: local-storage
   local:
     path: /home/vagrant/data/pv/kafka-pv
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: kubernetes.io/hostname
+          operator: In
+          values:
+          - node1
