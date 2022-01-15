@@ -23,11 +23,11 @@ public class OwnConsumer {
     private String topicName;
     public static List<ConsumerRecord<String, String>> messages = new ArrayList<>();
 
-    @KafkaListener(topics = "${topic.name.consumer}", groupId = "group_id", topicPartitions = {
-            @TopicPartition(topic = "${topic.name.consumer}",
-                    partitionOffsets = @PartitionOffset(partition = "*", initialOffset = "0"))
-    })
-//@KafkaListener(topics = "${topic.name.consumer}", groupId = "group_id")
+//    @KafkaListener(topics = "${topic.name.consumer}", groupId = "group_id", topicPartitions = {
+//            @TopicPartition(topic = "${topic.name.consumer}",
+//                    partitionOffsets = @PartitionOffset(partition = "*", initialOffset = "0"))
+//    })
+    @KafkaListener(topics = "${topic.name.consumer}", groupId = "group_id")
     public void consume(ConsumerRecord<String, String> payload) {
         messages.add(payload);
         log.info("Konsumiertes Topic: {}", topicName);
