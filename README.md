@@ -6,6 +6,9 @@ Kafka: 9092
 Actuator enabled
 
 
+helm status my-release
+helm pull bitnami/kafka
+
 Kafka can be accessed by consumers via port 9092 on the following DNS name from within your cluster:
 
     my-release-kafka.default.svc.cluster.local
@@ -31,3 +34,6 @@ To create a pod that you can use as a Kafka client run the following commands:
             --bootstrap-server my-release-kafka.default.svc.cluster.local:9092 \
             --topic test \
             --from-beginning
+			
+			
+PV "Terminating"-State: https://stackoverflow.com/a/59900177/3649685

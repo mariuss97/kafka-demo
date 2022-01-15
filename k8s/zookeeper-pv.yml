@@ -7,5 +7,7 @@ spec:
     - ReadWriteOnce
   capacity:
     storage: 10Gi
-  hostPath:
+  volumeMode: Filesystem
+  storageClassName: local-storage
+  local:
     path: /home/vagrant/data/pv/zookeeper-pv
