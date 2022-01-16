@@ -24,7 +24,7 @@ public class OwnConsumerPlainKafka {
     private static Environment env;
 
     @EventListener(ApplicationStartedEvent.class)
-    public static void main(String[] args) {
+    public static void main() {
 
         log.info("start main of OwnConsumerPlainKafka");
 
