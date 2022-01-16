@@ -1,0 +1,14 @@
+apiVersion: skaffold/v2beta26
+kind: Config
+metadata:
+  name: kafka-producer
+build:
+  artifacts:
+  - image: mariuss97/kafka-demo-producer
+    jib: {}
+  local: {}
+  
+deploy:
+  kubectl:
+    manifests:
+    - k8s-kafka-demo-producer-deployment.yml

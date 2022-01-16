@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: kafka-demo-producer
-          image: mariuss97/kafka-demo-producer:latest
+          image: mariuss97/kafka-demo-producer:4bca0ee-dirty
           imagePullPolicy: Always
           ports:
             - containerPort: 8090
