@@ -7,6 +7,8 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.event.ApplicationStartedEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
@@ -21,7 +23,10 @@ public class OwnConsumerPlainKafka {
     @Autowired
     private static Environment env;
 
+    @EventListener(ApplicationStartedEvent.class)
     public static void main(String[] args) {
+
+        log.info("start main of OwnConsumerPlainKafka");
 
         String topic = env.getProperty("topic.name.consumer");
 
