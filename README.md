@@ -5,6 +5,13 @@ Consumer: 8091
 Kafka: 9092
 Actuator enabled
 
+Node Port Range: 30000 - 32767
+
+Consumer-Service: 30001
+Producer-Service: 30000
+Kafdrop: 30900
+
+
 
 helm status my-release
 helm pull bitnami/kafka
