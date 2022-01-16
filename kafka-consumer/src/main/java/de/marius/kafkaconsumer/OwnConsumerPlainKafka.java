@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 
 import java.time.Duration;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Properties;
 
 @Slf4j
@@ -44,13 +45,22 @@ public class OwnConsumerPlainKafka {
         //Subscribing
         consumer.subscribe(Arrays.asList(topic));
         //polling
-        while (true) {
-            ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(100));
-            log.info("polling...");
-            for (ConsumerRecord<String, String> record : records) {
-                log.info("Key: " + record.key() + ", Value:" + record.value());
-                log.info("Partition:" + record.partition() + ",Offset:" + record.offset());
-            }
-        }
+        consumer.poll(Duration.ofMillis(100));
+        consumer.seekToBeginning(Collections.emptySet());
+        for (ConsumerRecord record : consumer.poll(Duration.ofMillis(100)).records(topic)) {
+        log.info("Key: " + record.key() + ", Value:" + record.value());
+        log.info("Partition:" + record.partition() + ",Offset:" + record.offset());
+    }
+
+
+//        while (true) {
+//            ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(100));
+//            log.info("polling...");
+//            for (ConsumerRecord<String, String> record : records) {
+//                log.info("Key: " + record.key() + ", Value:" + record.value());
+//                log.info("Partition:" + record.partition() + ",Offset:" + record.offset());
+//
+//            }
+//        }
     }
 }
