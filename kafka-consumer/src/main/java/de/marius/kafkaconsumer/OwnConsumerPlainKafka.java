@@ -47,10 +47,11 @@ public class OwnConsumerPlainKafka {
         //polling
         consumer.poll(Duration.ofMillis(100));
         consumer.seekToBeginning(Collections.emptySet());
+        while(true){
         for (ConsumerRecord record : consumer.poll(Duration.ofMillis(100)).records(topic)) {
         log.info("Key: " + record.key() + ", Value:" + record.value());
         log.info("Partition:" + record.partition() + ",Offset:" + record.offset());
-    }
+    }}
 
 
 //        while (true) {
