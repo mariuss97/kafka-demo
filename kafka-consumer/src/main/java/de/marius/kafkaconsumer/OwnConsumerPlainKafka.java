@@ -25,7 +25,7 @@ public class OwnConsumerPlainKafka {
     private Environment env;
 
     @EventListener(ApplicationStartedEvent.class)
-    public void main() {
+    public void main() throws InterruptedException {
 
         log.info("start main of OwnConsumerPlainKafka");
 
@@ -45,7 +45,8 @@ public class OwnConsumerPlainKafka {
         //Subscribing
         consumer.subscribe(Arrays.asList(topic));
         //polling
-        consumer.poll(Duration.ofMillis(100));
+        consumer.poll(Duration.ofMillis(0));
+        Thread.sleep(2000);
         consumer.seekToBeginning(Collections.emptySet());
         while(true){
         for (ConsumerRecord record : consumer.poll(Duration.ofMillis(100)).records(topic)) {
