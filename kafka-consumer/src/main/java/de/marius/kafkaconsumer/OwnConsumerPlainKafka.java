@@ -24,7 +24,7 @@ public class OwnConsumerPlainKafka {
     @Autowired
     private Environment env;
 
-    @EventListener(ApplicationStartedEvent.class)
+    //@EventListener(ApplicationStartedEvent.class)
     public void main() throws InterruptedException {
 
         log.info("start main of OwnConsumerPlainKafka");
