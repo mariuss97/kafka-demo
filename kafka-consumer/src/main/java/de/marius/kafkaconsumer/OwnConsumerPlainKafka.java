@@ -45,8 +45,13 @@ public class OwnConsumerPlainKafka {
         //Subscribing
         consumer.subscribe(Arrays.asList(topic));
         //polling
-        log.info("now poll first time...")
-        consumer.poll(Duration.ofMillis(0));
+        log.info("now poll first time...");
+        //consumer.poll(Duration.ofMillis(0));
+        while(consumer.assignment().isEmpty()) {
+            log.info("polling before assignment...");
+            consumer.poll(Duration.ofMillis(0));
+        }
+        log.info("assigned!");
         Thread.sleep(2000);
         log.info("end of sleep");
         consumer.seekToBeginning(Collections.emptySet());
