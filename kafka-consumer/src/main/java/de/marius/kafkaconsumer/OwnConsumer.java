@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
-import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.annotation.PartitionOffset;
@@ -24,10 +23,10 @@ public class OwnConsumer {
     private String topicName;
     public static List<ConsumerRecord<String, String>> messages = new ArrayList<>();
 
-    private final KafkaConsumer kafkaConsumer;
+    //private final KafkaConsumer kafkaConsumer;
 
 //    @KafkaListener(topics = "${topic.name.consumer}", groupId = "group_id", topicPartitions = {
-//            @TopicPartition(topic = "${topic.name.consumer}",
+//            @TopicPartition(topic = "${topic.name.conzzsumer}",
 //                    partitionOffsets = @PartitionOffset(partition = "*", initialOffset = "0"))
 //    })
     @KafkaListener(topics = "${topic.name.consumer}", groupId = "group_id")
