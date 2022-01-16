@@ -45,9 +45,12 @@ public class OwnConsumerPlainKafka {
         //Subscribing
         consumer.subscribe(Arrays.asList(topic));
         //polling
+        log.info("now poll first time...")
         consumer.poll(Duration.ofMillis(0));
         Thread.sleep(2000);
+        log.info("end of sleep");
         consumer.seekToBeginning(Collections.emptySet());
+        log.info("set to beginning");
         while(true){
         for (ConsumerRecord record : consumer.poll(Duration.ofMillis(100)).records(topic)) {
         log.info("Key: " + record.key() + ", Value:" + record.value());
