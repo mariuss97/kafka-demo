@@ -1,6 +1,7 @@
 package de.marius.kafkaconsumer.controller;
 
 import de.marius.kafkaconsumer.OwnConsumer;
+import de.marius.kafkaconsumer.services.KafkaService;
 import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
@@ -15,6 +16,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping(value = "/kafka")
 public class KafkaController {
+    private final KafkaService kafkaService;
     private final OwnConsumer ownConsumer;
 
     //private final KafkaConsumer kafkaConsumer;
@@ -26,20 +28,9 @@ public class KafkaController {
 //    }
 @GetMapping(value = "/receiveAll")
 public List<ConsumerRecord<String, String>> receiveAll(){
+
     System.out.println("receiveAll called");
-
-//    kafkaConsumer.subscribe(Collections.singletonList("mariusTestProducerTopic"));
-//    kafkaConsumer.poll(Duration.ofMillis(100));
-//    kafkaConsumer.seekToBeginning(Collections.emptySet());
-//    kafkaConsumer.poll(Duration.ofMillis(500000));//no loop to simplify
-//    OwnConsumer.kafkaConsumer.poll(Duration.ofMillis(0));
-//    OwnConsumer.kafkaConsumer.seekToBeginning(Collections.emptySet());
-
-//    for (ConsumerRecord record : OwnConsumer.kafkaConsumer.poll(Duration.ofMillis(0)).records("mariusTestProducerTopic")) {
-//        // process a record
-//    }
-
-    return OwnConsumer.messages;
+    return kafkaService.pollFromBeginning();
 }
 
 }
