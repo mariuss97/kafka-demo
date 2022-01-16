@@ -29,14 +29,14 @@ public class OwnConsumer {
 //            @TopicPartition(topic = "${topic.name.conzzsumer}",
 //                    partitionOffsets = @PartitionOffset(partition = "*", initialOffset = "0"))
 //    })
-    @KafkaListener(topics = "${topic.name.consumer}", groupId = "group_id")
-    public void consume(ConsumerRecord<String, String> payload) {
-        messages.add(payload);
-        log.info("Konsumiertes Topic: {}", topicName);
-        log.info("Key: {}", payload.key());
-        log.info("Headers: {}", payload.headers());
-        log.info("Partition: {}", payload.partition());
-        log.info("Order: {}", payload.value());
-
-    }
+//    @KafkaListener(topics = "${topic.name.consumer}", groupId = "group_id")
+//    public void consume(ConsumerRecord<String, String> payload) {
+//        messages.add(payload);
+//        log.info("Konsumiertes Topic: {}", topicName);
+//        log.info("Key: {}", payload.key());
+//        log.info("Headers: {}", payload.headers());
+//        log.info("Partition: {}", payload.partition());
+//        log.info("Order: {}", payload.value());
+//
+//    }
 }
