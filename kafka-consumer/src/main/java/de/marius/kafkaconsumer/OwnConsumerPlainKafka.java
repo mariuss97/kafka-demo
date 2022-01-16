@@ -21,14 +21,16 @@ import java.util.Properties;
 public class OwnConsumerPlainKafka {
 
     @Autowired
-    private static Environment env;
+    private Environment env;
 
     @EventListener(ApplicationStartedEvent.class)
-    public static void main() {
+    public void main() {
 
         log.info("start main of OwnConsumerPlainKafka");
 
         String topic = env.getProperty("topic.name.consumer");
+
+        log.info("topicNameX: "+topic);
 
         //Creating consumer properties
         Properties properties = new Properties();
