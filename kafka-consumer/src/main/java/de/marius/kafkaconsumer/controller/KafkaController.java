@@ -1,5 +1,6 @@
 package de.marius.kafkaconsumer.controller;
 
+import com.google.gson.Gson;
 import de.marius.kafkaconsumer.OwnConsumer;
 import de.marius.kafkaconsumer.services.KafkaService;
 import lombok.RequiredArgsConstructor;
@@ -27,10 +28,10 @@ public class KafkaController {
 //        consumer.consume();
 //    }
 @GetMapping(value = "/receiveAll")
-public List<ConsumerRecord<String, String>> receiveAll(){
+public String receiveAll(){
 
     System.out.println("receiveAll called");
-    return kafkaService.pollFromBeginning();
+    return new Gson().toJson(kafkaService.pollFromBeginning());
 }
 
 }
