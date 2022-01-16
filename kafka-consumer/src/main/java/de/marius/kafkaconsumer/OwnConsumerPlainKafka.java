@@ -46,6 +46,7 @@ public class OwnConsumerPlainKafka {
         //polling
         while (true) {
             ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(100));
+            log.info("polling...");
             for (ConsumerRecord<String, String> record : records) {
                 log.info("Key: " + record.key() + ", Value:" + record.value());
                 log.info("Partition:" + record.partition() + ",Offset:" + record.offset());
