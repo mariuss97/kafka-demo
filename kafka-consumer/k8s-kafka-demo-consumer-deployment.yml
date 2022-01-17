@@ -27,10 +27,10 @@ kind: Service
 metadata:
   name: kafka-demo-consumer
 spec:
-  type: NodePort
+  type: ClusterIP
   ports:
     - port: 80
       targetPort: 8091
-      nodePort: 30001
+      #nodePort: 30001
   selector:
     app: kafka-demo-consumer
