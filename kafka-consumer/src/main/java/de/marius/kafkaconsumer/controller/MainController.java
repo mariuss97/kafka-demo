@@ -8,6 +8,6 @@ public class MainController {
 
     @GetMapping("hallo")
     public String moinsens (){
-        return "Moin Moin vom Consumer";
+        return "Moin Moin vom Consumerrrr";
     }
 }
