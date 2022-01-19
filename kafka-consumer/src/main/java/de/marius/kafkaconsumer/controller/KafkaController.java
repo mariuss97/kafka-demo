@@ -22,11 +22,11 @@ public class KafkaController {
 
     //private final KafkaConsumer kafkaConsumer;
 
-//    @GetMapping(value = "/receive")
-//    public void send(@RequestParam("message") String message){
-//
-//        consumer.consume();
-//    }
+    @GetMapping(value = "/check")
+    public String send(@RequestParam("message") String message){
+
+        return "Check suceeded";
+    }
 @GetMapping(value = "/receiveAll")
 public String receiveAll(){
 
