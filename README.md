@@ -44,3 +44,6 @@ To create a pod that you can use as a Kafka client run the following commands:
 			
 			
 PV "Terminating"-State: https://stackoverflow.com/a/59900177/3649685
+
+Get generated nginx conf because of Ingress Resource: kubectl exec -it nginx-ingress-5b467c7d7-kbxzv -n "nginx-ingress" -- /bin/bash
+check /etc/nginx/conf.d - Folder

@@ -23,7 +23,7 @@ public class KafkaController {
     //private final KafkaConsumer kafkaConsumer;
 
     @GetMapping(value = "/check")
-    public String send(@RequestParam("message") String message){
+    public String check( String message){
 
         return "Check suceeded";
     }
