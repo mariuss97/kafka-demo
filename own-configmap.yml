@@ -5,7 +5,7 @@ metadata:
   namespace: nginx-ingress 
 data:
   insertedd.yml: |+
-        upstream default-springboot-ingress-consumer.mariusdev.net-kafka-demo-consumer-80 {
+    upstream default-springboot-ingress-consumer.mariusdev.net-kafka-demo-consumer-80 {
             zone default-springboot-ingress-consumer.mariusdev.net-kafka-demo-consumer-80 256k;
             random two least_conn;
 
@@ -37,8 +37,8 @@ data:
 
     server {
 
-
-            listen 80;
+            
+            listen 127.0.0.1:80;
 
 
 
@@ -113,7 +113,7 @@ data:
     server {
 
 
-            listen 80;
+            listen 127.0.0.1:80;
 
 
 
@@ -165,7 +165,7 @@ data:
     server {
 
 
-            listen 80;
+            listen 127.0.0.1:80;
 
 
 
