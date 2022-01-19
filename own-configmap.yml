@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: port-config
+  namespace: nginx-ingress 
+data:
+  insertedd.yml: |
+    namespaces:
+      - default
+    labels:
+      - "app"
+      - "owner"    
+

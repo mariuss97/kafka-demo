@@ -4,15 +4,47 @@ metadata:
   name: springboot-ingress
   annotations:
     kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/use-regex: "true"
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    nginx.org/listen-ports: "127.0.0.1:80"
 spec:
   rules:
-  - host: "m.mytest.com"
+  - host: "consumer.mariusdev.net"
     http:
       paths:
-      - path: "/hallo"       
-        pathType: Prefix       
+      - path: "/kafkaproduce"
+        pathType: Prefix
         backend:
-          service:      
+          service:
+            name: kafka-demo-producer
+            port:
+              number: 80
+      - path: "/kafkaconsume(/|$)(.*)"
+        pathType: Prefix
+        backend:
+          service:
             name: kafka-demo-consumer
             port:
               number: 80
+  - host: "producer.mariusdev.net"
+    http:
+      paths:
+      - path: "/"
+        pathType: Prefix
+        backend:
+          service:
+            name: kafka-demo-producer
+            port:
+              number: 80
+  - host: "kafdrop.mariusdev.net"
+    http:
+      paths:
+      - path: "/"
+        pathType: Prefix
+        backend:
+          service:
+            name: kafka-demo-producer
+            port:
+              number: 80        
+
