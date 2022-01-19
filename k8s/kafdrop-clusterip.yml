@@ -1,0 +1,39 @@
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    meta.helm.sh/release-name: ktool
+    meta.helm.sh/release-namespace: default
+  creationTimestamp: "2022-01-15T13:29:17Z"
+  labels:
+    app.kubernetes.io/instance: ktool
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: kafdrop
+    app.kubernetes.io/version: 3.27.0
+    helm.sh/chart: kafdrop-0.1.0
+  name: ktool-kafdrop
+  namespace: default
+  resourceVersion: "95652"
+  uid: 8c77a988-85da-4542-b15f-a1e9d858eb25
+spec:
+  clusterIP: 10.233.63.30
+  clusterIPs:
+  - 10.233.63.30
+  externalTrafficPolicy: Cluster
+  internalTrafficPolicy: Cluster
+  ipFamilies:
+  - IPv4
+  ipFamilyPolicy: SingleStack
+  ports:
+  - name: tcp
+    nodePort: 30900
+    port: 9000
+    protocol: TCP
+    targetPort: tcp
+  selector:
+    app.kubernetes.io/instance: ktool
+    app.kubernetes.io/name: kafdrop
+  sessionAffinity: None
+  type: ClusterIP
+status:
+  loadBalancer: {}
