@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: node-opcua-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: node-opcua-server
+  template:
+    metadata:
+      labels:
+        app: node-opcua-server
+    spec:
+      containers:
+        - name: node-opcua-server
+          image: core.harbor.domain/library/mylittleopcua:latest
+          #imagePullPolicy: Always
+          ports:
+            - containerPort: 4334
+          env:
+            - name: PORT
+              value: "4334"
+            - name: RESOURCEPATH
+              value: "/UA/MyLittleServer"
+            - name: OPCUAHOSTNAME
+              value: "172.17.0.1"  
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kafka-demo-producer
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: 8090
+      #nodePort: 30000
+  selector:
+    app: kafka-demo-producer
