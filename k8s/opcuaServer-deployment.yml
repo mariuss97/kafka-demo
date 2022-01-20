@@ -29,7 +29,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: kafka-demo-producer
+  name: node-opcua-server
 spec:
   type: ClusterIP
   ports:
