@@ -15,7 +15,7 @@ spec:
       containers:
         - name: node-opcua-client
           image: 100.0.0.2:30099/library/opcuaclient:latest
-          #imagePullPolicy: Always
+          imagePullPolicy: Always
           ports:
             - containerPort: 8061
           env:
