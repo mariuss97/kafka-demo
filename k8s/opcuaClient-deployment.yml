@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: node-opcua-client
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: node-opcua-client
+  template:
+    metadata:
+      labels:
+        app: node-opcua-client
+    spec:
+      containers:
+        - name: node-opcua-client
+          image: 100.0.0.2:30090/library/opcuaclient:latest
+          #imagePullPolicy: Always
+          ports:
+            - containerPort: 8061
+          env:
+            - name: TOPIC_NAME_PRODUCER
+              value: "opcuaTopicFromDeployment"
+      imagePullSecrets:
+        - name: regcred   
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: node-opcua-client
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: 8061
+      #nodePort: 30000
+  selector:
+    app: node-opcua-client
