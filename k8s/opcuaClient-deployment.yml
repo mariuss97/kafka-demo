@@ -14,13 +14,17 @@ spec:
     spec:
       containers:
         - name: node-opcua-client
-          image: 100.0.0.2:30090/library/opcuaclient:latest
+          image: 100.0.0.2:30099/library/opcuaclient:latest
           #imagePullPolicy: Always
           ports:
             - containerPort: 8061
           env:
             - name: TOPIC_NAME_PRODUCER
               value: "opcuaTopicFromDeployment"
+            - name: OPCUA_PORT
+              value: "4334"
+            - name: OPCUA_SERVERADDRESS
+              value: "10.233.23.139"  
       imagePullSecrets:
         - name: regcred   
 ---
