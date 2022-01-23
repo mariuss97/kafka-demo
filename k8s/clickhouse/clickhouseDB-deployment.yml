@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: clickhouse-db
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: clickhouse-db
+  template:
+    metadata:
+      labels:
+        app: clickhouse-db
+    spec:
+      containers:
+        - name: clickhouse-db
+          image: yandex/clickhouse-server:21.7.10.4
+          #imagePullPolicy: Always
+          ports:
+            - containerPort: 8123
+          env:
+            - name: CLICKHOUSE_USER
+              value: "dsp"
+            - name: CLICKHOUSE_PASSWORD
+              value: "dsp"
+            - name: CLICKHOUSE_DB
+              value: "dsp"
+          volumeMounts:
+            - mountPath: /var/lib/clickhouse
+              name: clickhouse-storage
+      volumes:
+        - name: clickhouse-storage
+          persistentVolumeClaim:
+            claimName: clickhouse-storage-dir-pvc
+      imagePullSecrets:
+        - name: regcred   
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: clickhouse-db
+spec:
+  type: ClusterIP
+  ports:
+    - port: 8123
+      targetPort: 8123
+      #nodePort: 30000
+  selector:
+    app: clickhouse-db
