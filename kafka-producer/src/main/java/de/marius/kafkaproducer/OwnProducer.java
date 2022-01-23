@@ -15,8 +15,6 @@ public class OwnProducer {
     @Value("${topic.name.producer}")
     private String topicName;
 
-
-
     //first String: Topic, second String: message
     private final KafkaTemplate<String, String> kafkaTemplate;
 
