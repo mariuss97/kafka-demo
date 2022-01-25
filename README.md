@@ -70,13 +70,33 @@ http://kafkademo.mariusdev.net/kafkaconsume/hallo
 http://kafkademo.mariusdev.net/kafkaproduce/hallo
 http://prometheus.mariusdev.net/prometheus
 http://grafana.mariusdev.net/
-https://core.harbor.domain/
+http://clickhouse.mariusdev.net/
+harbor: https://100.0.0.2:30099/
 
 Ingress muss folgende Annotation haben:
 kubernetes.io/ingress.class: nginx
 
 Login in Private Registry: docker login core.harbor.domain --username=admin --password Harbor12345
+
+
+Token k8s Dashboard: eyJhbGciOiJSUzI1NiIsImtpZCI6IkJoRkVZY3hmTW1LVkh1ajI0bHF4dndkeFhxcU9SZDZEWTJJNnlMOFBuYjgifQ.eyJpc3MiOiJrdWJlcm5ldGVzL3NlcnZpY2VhY2NvdW50Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9uYW1lc3BhY2UiOiJkZWZhdWx0Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZWNyZXQubmFtZSI6ImRhc2hib2FyZC1hZG1pbi1zYS10b2tlbi10djVsayIsImt1YmVybmV0ZXMuaW8vc2VydmljZWFjY291bnQvc2VydmljZS1hY2NvdW50Lm5hbWUiOiJkYXNoYm9hcmQtYWRtaW4tc2EiLCJrdWJlcm5ldGVzLmlvL3NlcnZpY2VhY2NvdW50L3NlcnZpY2UtYWNjb3VudC51aWQiOiI4OTZmYzg0YS01MzY0LTQ5NWEtYTE5OC1jNWY1NmYwMjlmY2IiLCJzdWIiOiJzeXN0ZW06c2VydmljZWFjY291bnQ6ZGVmYXVsdDpkYXNoYm9hcmQtYWRtaW4tc2EifQ.Q5RXQfTjWBawMTZ3slavkJna-ybPCKvEGGGi4zSkEB53aBcvksdjxZn8yC7fZBgUxFk5PKB-odKLJ2l-LK6DKdJXDNhPgDS2OJKpB-NCvr9S5cMnKZ48vhSD9e-NIxBAZTl8tbv-76jl-FksNY-Eoh-fDnC09KOcUpVDDK2iftVNEpVDuqMr5RMdS1rocJZMAAbbx_pZxuAThB9E2CPjafjbOjJp4DxfZwEpK-Im4LFVryhx3ixX1oLARP60NhOJimO6P6SYzLs3L2RENKZ6WxsJLz-ghWl9LHR8YZzPTvFMoO4UwgdaETqsntGpk047gerLuu5e5oF_g3UCLiBv2Q
+
+
+#DOCKER
+- Harbor: https://100.0.0.2:30099
 username: admin
 password: Harbor12345
 
-Token k8s Dashboard: eyJhbGciOiJSUzI1NiIsImtpZCI6IkJoRkVZY3hmTW1LVkh1ajI0bHF4dndkeFhxcU9SZDZEWTJJNnlMOFBuYjgifQ.eyJpc3MiOiJrdWJlcm5ldGVzL3NlcnZpY2VhY2NvdW50Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9uYW1lc3BhY2UiOiJkZWZhdWx0Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZWNyZXQubmFtZSI6ImRhc2hib2FyZC1hZG1pbi1zYS10b2tlbi10djVsayIsImt1YmVybmV0ZXMuaW8vc2VydmljZWFjY291bnQvc2VydmljZS1hY2NvdW50Lm5hbWUiOiJkYXNoYm9hcmQtYWRtaW4tc2EiLCJrdWJlcm5ldGVzLmlvL3NlcnZpY2VhY2NvdW50L3NlcnZpY2UtYWNjb3VudC51aWQiOiI4OTZmYzg0YS01MzY0LTQ5NWEtYTE5OC1jNWY1NmYwMjlmY2IiLCJzdWIiOiJzeXN0ZW06c2VydmljZWFjY291bnQ6ZGVmYXVsdDpkYXNoYm9hcmQtYWRtaW4tc2EifQ.Q5RXQfTjWBawMTZ3slavkJna-ybPCKvEGGGi4zSkEB53aBcvksdjxZn8yC7fZBgUxFk5PKB-odKLJ2l-LK6DKdJXDNhPgDS2OJKpB-NCvr9S5cMnKZ48vhSD9e-NIxBAZTl8tbv-76jl-FksNY-Eoh-fDnC09KOcUpVDDK2iftVNEpVDuqMr5RMdS1rocJZMAAbbx_pZxuAThB9E2CPjafjbOjJp4DxfZwEpK-Im4LFVryhx3ixX1oLARP60NhOJimO6P6SYzLs3L2RENKZ6WxsJLz-ghWl9LHR8YZzPTvFMoO4UwgdaETqsntGpk047gerLuu5e5oF_g3UCLiBv2Q
+Zugriff via Windows Docker: docker push 100.0.0.2:30099/library/nginx:v3
+-Zertifikat (.crt) installieren via Doppelklick
+-Docker Daemon neustarten
+
+Harbor Notes
+-Installation via Helm: 
+helm install my-harbor harbor/harbor -n harbor-system --set expose.type="nodePort" --set expose.nodePort.ports.https.nodePort=30099 --set expose.tls.auto.commonName="100.0.0.2" --set externalURL="https://100.0.0.2:30099"
+-Zertifikat aus UI installieren mit update-ca-certificates
+-Nodes neustarten: https://www.ibm.com/support/pages/steps-follow-while-restarting-kubernetes-and-docker-infosphere-information-server-installations
+
+
+#Clickhouse
+Erreichbar via Konfiguration in DBeaver: http://clickhouse.mariusdev.net/ Port 80
