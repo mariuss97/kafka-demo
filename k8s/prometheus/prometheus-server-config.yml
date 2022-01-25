@@ -31,6 +31,19 @@ data:
           - "alertmanager.monitoring.svc:9093"
 
     scrape_configs:
+    
+      - job_name: 'clickhouse-sink'
+        metrics_path: '/actuator/prometheus'
+        scrape_interval: 60
+        static_configs:
+          - targets: ['clickhouse-sink:80'] 
+          
+      - job_name: 'opcua-client'
+        metrics_path: '/actuator/prometheus'
+        scrape_interval: 60
+        static_configs:
+          - targets: ['node-opcua-client:80']     
+        
       - job_name: 'node-exporter'
         kubernetes_sd_configs:
           - role: endpoints
