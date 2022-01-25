@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: ubuntu
+spec:
+  selector:
+    matchLabels:
+      app: ubuntu
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      terminationGracePeriodSeconds: 10
+      containers:
+      - name: ubuntu
+        image: ubuntu
+        command: [ "/bin/bash", "-c", "--" ]
+        args: ["while true; do sleep 30; done;"]
+        ports:
+        - containerPort: 80
+          name: ubuntu
