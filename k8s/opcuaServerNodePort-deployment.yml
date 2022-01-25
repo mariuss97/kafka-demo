@@ -1,16 +1,16 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: node-opcua-server
+  name: node-opcua-server-np
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: node-opcua-server
+      app: node-opcua-server-np
   template:
     metadata:
       labels:
-        app: node-opcua-server
+        app: node-opcua-server-np
     spec:
       containers:
         - name: node-opcua-server
@@ -24,19 +24,19 @@ spec:
             - name: RESOURCEPATH
               value: "/UA/MyLittleServer"
             - name: OPCUAHOSTNAME
-              value: "10.233.23.139"
-      imagePullSecrets:
+              value: "10.233.44.248"
+      imagePullSecrets:        
         - name: regcred   
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: node-opcua-server
+  name: node-opcua-server-np
 spec:
-  type: ClusterIP
+  type: NodePort
   ports:
     - port: 4334
       targetPort: 4334
-      #nodePort: 30000
+      nodePort: 30003
   selector:
-    app: node-opcua-server
+    app: node-opcua-server-np
