@@ -34,13 +34,13 @@ data:
     
       - job_name: 'clickhouse-sink'
         metrics_path: '/actuator/prometheus'
-        scrape_interval: 60
+        scrape_interval: "60"
         static_configs:
           - targets: ['clickhouse-sink:80'] 
           
       - job_name: 'opcua-client'
         metrics_path: '/actuator/prometheus'
-        scrape_interval: 60
+        scrape_interval: "60"
         static_configs:
           - targets: ['node-opcua-client:80']     
         
