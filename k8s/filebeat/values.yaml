@@ -58,9 +58,6 @@ daemonset:
     runAsUser: 0
     privileged: false
   resources:
-    requests:
-      cpu: "100m"
-      memory: "100Mi"
     limits:
       cpu: "1000m"
       memory: "200Mi"
@@ -115,9 +112,6 @@ deployment:
     runAsUser: 0
     privileged: false
   resources:
-    requests:
-      cpu: "100m"
-      memory: "100Mi"
     limits:
       cpu: "1000m"
       memory: "200Mi"

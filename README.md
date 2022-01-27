@@ -69,9 +69,9 @@ http://kafdrop.mariusdev.net/hallo
 http://kafkademo.mariusdev.net/kafkaconsume/hallo
 http://kafkademo.mariusdev.net/kafkaproduce/hallo
 http://prometheus.mariusdev.net/prometheus
-http://grafana.mariusdev.net/
+http://grafana.mariusdev.net/ (admin/dspdsp)
 http://clickhouse.mariusdev.net/
-harbor: https://100.0.0.2:30099/
+harbor: https://100.0.0.2:30099/ (admin/Harbor12345)
 
 Ingress muss folgende Annotation haben:
 kubernetes.io/ingress.class: nginx
@@ -100,3 +100,16 @@ helm install my-harbor harbor/harbor -n harbor-system --set expose.type="nodePor
 
 #Clickhouse
 Erreichbar via Konfiguration in DBeaver: http://clickhouse.mariusdev.net/ Port 80
+
+
+#K8s Cheatsheet
+Delete all Terminated/Evicted Pods in Namespace "harbor-system": kubectl get pod -n harbor-system | egrep -i  'Evicted|Terminated' | awk '{print $1}' | xargs kubectl delete pod -n harbor-system
+Default Namespace: kubectl get pod | egrep -i  'Evicted|Terminated' | awk '{print $1}' | xargs kubectl delete pod 
+Re-deploy ohne Veränderung von Service: kubectl -n monitoring rollout restart deployment grafana
+List env-Vars of Pod: kubectl exec -it pod/grafana-6d9d65bb75-l5w4x -n monitoring -- printenv
+Change namespace: kubens monitoring
+
+
+#Bash cheatsheet
+Ctrl-R: backward search
+Ctrl-S: move back after Ctrl-R
