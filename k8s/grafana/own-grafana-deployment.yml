@@ -19,7 +19,9 @@ spec:
         image: grafana/grafana:latest
         env:
         - name: GF_SECURITY_ADMIN_PASSWORD
-          value: admin
+          value: "dspdsp"
+          # - name: GF_SECURITY_DISABLE_INITIAL_ADMIN_CREATION
+          # value: "true"
         ports:
         - name: grafana
           containerPort: 3000

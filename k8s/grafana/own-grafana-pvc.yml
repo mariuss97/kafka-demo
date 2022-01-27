@@ -3,7 +3,7 @@ kind: PersistentVolumeClaim
 
 metadata:
   name: grafana-storage-dir-pvc
-
+  namespace: monitoring
 spec:
   accessModes:
     - ReadWriteOnce
