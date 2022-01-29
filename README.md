@@ -17,6 +17,10 @@ Kafdrop: 30900
 Restart cluster:kubectl drain --ignore-daemonsets --force --delete-local-data <node-hostname>
 Danach: kubectl uncordon <node-hostname>
 
+Install Kafka via Helm:
+helm repo add bitnami https://charts.bitnami.com/bitnami
+helm install my-release bitnami/kafka
+
 helm status my-release
 helm pull bitnami/kafka
 tar -xvzf yyy.tgz
@@ -93,7 +97,8 @@ Zugriff via Windows Docker: docker push 100.0.0.2:30099/library/nginx:v3
 
 Harbor Notes
 -Installation via Helm: 
-helm install my-harbor harbor/harbor -n harbor-system --set expose.type="nodePort" --set expose.nodePort.ports.https.nodePort=30099 --set expose.tls.auto.commonName="100.0.0.2" --set externalURL="https://100.0.0.2:30099"
+helm repo add harbor https://helm.goharbor.io
+helm install my-harbor harbor/harbor -n harbor-system --set expose.type="nodePort" --set expose.nodePort.ports.https.nodePort=30099 --set expose.tls.auto.commonName="100.0.0.2" --set externalURL="https://172.16.8.11:30099" --create-namespace
 -Zertifikat aus UI installieren mit update-ca-certificates
 -Nodes neustarten: https://www.ibm.com/support/pages/steps-follow-while-restarting-kubernetes-and-docker-infosphere-information-server-installations
 
@@ -104,12 +109,20 @@ Erreichbar via Konfiguration in DBeaver: http://clickhouse.mariusdev.net/ Port 8
 
 #K8s Cheatsheet
 Delete all Terminated/Evicted Pods in Namespace "harbor-system": kubectl get pod -n harbor-system | egrep -i  'Evicted|Terminated' | awk '{print $1}' | xargs kubectl delete pod -n harbor-system
+Delete unused replicasets: kubectl delete $(kubectl get all | grep replicaset.apps | grep "0         0         0" | cut -d' ' -f 1)
 Default Namespace: kubectl get pod | egrep -i  'Evicted|Terminated' | awk '{print $1}' | xargs kubectl delete pod 
 Re-deploy ohne Veränderung von Service: kubectl -n monitoring rollout restart deployment grafana
 List env-Vars of Pod: kubectl exec -it pod/grafana-6d9d65bb75-l5w4x -n monitoring -- printenv
 Change namespace: kubens monitoring
+Untaint master: kubectl taint nodes --all node-role.kubernetes.io/master-
 
 
 #Bash cheatsheet
-Ctrl-R: backward search
-Ctrl-S: move back after Ctrl-R
+Ctrl + R: backward search
+Ctrl + Shift + R: move back after 
+
+#Install Helm Charts
+1. Herunterladen von Package via ArtifactRepo: z.B. https://artifacthub.io/packages/helm/elastic/kibana
+2. Install-Button auf Webseite (unten rechts klein: DOwnload)
+3. In Verzeichnis dann values.yaml anpassen
+4. Installieren des Charts in neuem elk-Namespace: helm install filebeat . -n elk --create-namespace
