@@ -18,7 +18,7 @@ spec:
       - name: registry-ca
         image: busybox
         command: [ 'sh' ]
-        args: [ '-c', 'mkdir /etc/docker/certs.d/100.0.0.2:30099 && cp /home/core/registry-ca /etc/docker/certs.d/100.0.0.2:30099/ca.crt && exec tail -f /dev/null' ]
+        args: [ '-c', 'mkdir /etc/docker/certs.d/172.16.8.11:30099 && cp /home/core/registry-ca /etc/docker/certs.d/172.16.8.11:30099/ca.crt && exec tail -f /dev/null' ]
         volumeMounts:
         - name: etc-docker
           mountPath: /etc/docker/certs.d
