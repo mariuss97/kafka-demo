@@ -1,0 +1,786 @@
+[[configuration-local]]
+== Configuration - Local
+
+[partintro]
+--
+This section covers how to configure Spring Cloud Data Flow Server's features, such as which relational database to use and security.
+It also covers how to configure Spring Cloud Data Flow's shell features.
+--
+
+[[configuration-local-enable-disable-specific-features]]
+=== Feature Toggles
+
+Spring Cloud Data Flow Server offers specific set of features that can be enabled/disabled when launching. These features include all the lifecycle operations and REST endpoints (server and client implementations, including the shell and the UI) for:
+
+* Streams (requires Skipper)
+* Tasks
+* Task Scheduler
+
+One can enable and disable these features by setting the following boolean properties when launching the Data Flow server:
+
+* `spring.cloud.dataflow.features.streams-enabled`
+* `spring.cloud.dataflow.features.tasks-enabled`
+* `spring.cloud.dataflow.features.schedules-enabled`
+
+By default, stream (requires Skipper), and tasks are enabled and Task Scheduler is disabled by default.
+
+The REST `/about` endpoint provides information on the features that have been enabled and disabled.
+
+[[configuration-local-rdbms]]
+=== Database
+
+A relational database is used to store stream and task definitions as well as the state of executed tasks.
+Spring Cloud Data Flow provides schemas for *H2*, *MySQL*, *Oracle*, *PostgreSQL*, *Db2*, and *SQL Server*. The schema is automatically created when the server starts.
+
+By default, Spring Cloud Data Flow offers an embedded instance of the *H2* database. The *H2* database is good
+for development purposes but is not recommended for production use.
+
+NOTE: *H2* database is not supported as an external mode.
+
+The JDBC drivers for *MySQL* (through the MariaDB driver), *PostgreSQL*, *SQL Server*, and embedded *H2* are available without additional configuration.
+If you are using any other database, then you need to put the corresponding JDBC driver jar on the classpath of the server.
+
+The database properties can be passed as environment variables or command-line arguments to the Data Flow Server.
+
+==== MySQL
+
+The following example shows how to define a MySQL database connection using MariaDB driver.
+
+[source,bash,subs=attributes]
+----
+java -jar spring-cloud-dataflow-server/target/spring-cloud-dataflow-server-{project-version}.jar \
+    --spring.datasource.url=jdbc:mysql://localhost:3306/mydb \
+    --spring.datasource.username=<user> \
+    --spring.datasource.password=<password> \
+    --spring.datasource.driver-class-name=org.mariadb.jdbc.Driver
+----
+
+MySQL versions up to _5.7_ can be used with a MariaDB driver. Starting from version _8.0_ MySQL's own driver has to be used.
+
+[source,bash,subs=attributes]
+----
+java -jar spring-cloud-dataflow-server/target/spring-cloud-dataflow-server-{project-version}.jar \
+    --spring.datasource.url=jdbc:mysql://localhost:3306/mydb \
+    --spring.datasource.username=<user> \
+    --spring.datasource.password=<password> \
+    --spring.datasource.driver-class-name=com.mysql.jdbc.Driver
+----
+
+NOTE: Due to licensing restrictions we're unable to bundle MySQL driver. You need to add it to
+      server's classpath yourself.
+
+==== MariaDB
+
+The following example shows how to define a MariaDB database connection with command Line arguments
+
+[source,bash,subs=attributes]
+----
+java -jar spring-cloud-dataflow-server/target/spring-cloud-dataflow-server-{project-version}.jar \
+    --spring.datasource.url=jdbc:mariadb://localhost:3306/mydb?useMysqlMetadata=true \
+    --spring.datasource.username=<user> \
+    --spring.datasource.password=<password> \
+    --spring.datasource.driver-class-name=org.mariadb.jdbc.Driver
+----
+
+Starting with MariaDB v2.4.1 connector release, it is required to also add `useMysqlMetadata=true`
+to the JDBC URL. This is a required workaround until when MySQL and MariaDB entirely switch as two
+different databases.
+
+MariaDB version _10.3_ introduced a support for real database sequences which is yet another breaking
+change while toolings around these databases fully support MySQL and MariaDB as a separate database
+types. Workaround is to use older hibernate dialect which doesn't try to use sequences.
+
+[source,bash,subs=attributes]
+----
+java -jar spring-cloud-dataflow-server/target/spring-cloud-dataflow-server-{project-version}.jar \
+    --spring.datasource.url=jdbc:mariadb://localhost:3306/mydb?useMysqlMetadata=true \
+    --spring.datasource.username=<user> \
+    --spring.datasource.password=<password> \
+    --spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MariaDB102Dialect \
+    --spring.datasource.driver-class-name=org.mariadb.jdbc.Driver
+----
+
+==== PostgreSQL
+
+The following example shows how to define a PostgreSQL database connection with command line arguments:
+
+[source,bash,subs=attributes]
+----
+java -jar spring-cloud-dataflow-server/target/spring-cloud-dataflow-server-{project-version}.jar \
+    --spring.datasource.url=jdbc:postgresql://localhost:5432/mydb \
+    --spring.datasource.username=<user> \
+    --spring.datasource.password=<password> \
+    --spring.datasource.driver-class-name=org.postgresql.Driver
+----
+
+==== SQL Server
+
+The following example shows how to define a SQL Server database connection with command line arguments:
+
+[source,bash,subs=attributes]
+----
+java -jar spring-cloud-dataflow-server/target/spring-cloud-dataflow-server-{project-version}.jar \
+    --spring.datasource.url='jdbc:sqlserver://localhost:1433;databaseName=mydb' \
+    --spring.datasource.username=<user> \
+    --spring.datasource.password=<password> \
+    --spring.datasource.driver-class-name=com.microsoft.sqlserver.jdbc.SQLServerDriver
+----
+
+==== Db2
+
+The following example shows how to define a Db2 database connection with command line arguments:
+
+[source,bash,subs=attributes]
+----
+java -jar spring-cloud-dataflow-server/target/spring-cloud-dataflow-server-{project-version}.jar \
+    --spring.datasource.url=jdbc:db2://localhost:50000/mydb \
+    --spring.datasource.username=<user> \
+    --spring.datasource.password=<password> \
+    --spring.datasource.driver-class-name=com.ibm.db2.jcc.DB2Driver
+----
+
+NOTE: Due to licensing restrictions we're unable to bundle Db2 driver. You need to add it to
+      server's classpath yourself.
+
+==== Oracle
+
+The following example shows how to define a Oracle database connection with command line arguments:
+
+[source,bash,subs=attributes]
+----
+java -jar spring-cloud-dataflow-server/target/spring-cloud-dataflow-server-{project-version}.jar \
+    --spring.datasource.url=jdbc:oracle:thin:@localhost:1521/MYDB \
+    --spring.datasource.username=<user> \
+    --spring.datasource.password=<password> \
+    --spring.datasource.driver-class-name=oracle.jdbc.OracleDriver
+----
+
+NOTE: Due to licensing restrictions we're unable to bundle Oracle driver. You need to add it to
+      server's classpath yourself.
+
+==== Adding a Custom JDBC Driver
+To add a custom driver for the database (for example, Oracle), you should rebuild the Data Flow Server and add the dependency to the Maven `pom.xml` file.
+You need to modify the maven `pom.xml` of `spring-cloud-dataflow-server` module.
+There are GA release tags in GitHub repository, so you can switch to desired GA tags to add the drivers on the production-ready codebase.
+
+To add a custom JDBC driver dependency for the Spring Cloud Data Flow server:
+
+. Select the tag that corresponds to the version of the server you want to rebuild and clone the github repository.
+. Edit the spring-cloud-dataflow-server/pom.xml and, in the `dependencies` section, add the dependency for the database driver required.  In the following example , an Oracle driver has been chosen:
+
+[source, xml]
+----
+<dependencies>
+...
+  <dependency>
+    <groupId>com.oracle.jdbc</groupId>
+    <artifactId>ojdbc8</artifactId>
+    <version>12.2.0.1</version>
+  </dependency>
+...
+</dependencies>
+----
+
+[start=3]
+. Build the application as described in <<appendix-building.adoc#building, Building Spring Cloud Data Flow>>
+
+You can also provide default values when rebuilding the server by adding the necessary properties to the dataflow-server.yml file,
+as shown in the following example for PostgreSQL:
+
+[source]
+----
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/mydb
+    username: myuser
+    password: mypass
+    driver-class-name:org.postgresql.Driver
+----
+
+[start=4]
+. Alternatively, you can build a custom Spring Cloud Data Flow server with your build files.
+There are examples of a custom server builds in our https://github.com/spring-cloud/spring-cloud-dataflow-samples/tree/master/custom-dataflow-builds[samples repo] if there is a need to add a driver jars.
+
+[[configuration-local-rdbms-schema]]
+==== Schema Handling
+On default database schema is managed with _Flyway_ which is convenient if it's
+possible to give enough permissions to a database user.
+
+Here's a description what happens when _Skipper_ server is started:
+
+* Flyway checks if `flyway_schema_history` table exists.
+* Does a baseline(to version 1) if schema is not empty as _Dataflow_ tables
+  may be in place if a shared DB is used.
+* If schema is empty, flyway assumes to start from a scratch.
+* Goes through all needed schema migrations.
+
+Here's a description what happens when _Dataflow_ server is started:
+
+* Flyway checks if `flyway_schema_history_dataflow` table exists.
+* Does a baseline(to version 1) if schema is not empty as _Skipper_ tables
+  may be in place if a shared DB is used.
+* If schema is empty, flyway assumes to start from a scratch.
+* Goes through all needed schema migrations.
+* Due to historical reasons, if we detect that schema is from _1.7.x_ line
+  we convert these to structures needed from _2.0.x_ onwards and fully
+  continue with flyway.
+
+[NOTE]
+====
+We have schema ddl's in our source code
+https://github.com/spring-cloud/spring-cloud-dataflow/tree/master/spring-cloud-dataflow-server-core/src/main/resources/schemas[schemas]
+which can be used manually if _Flyway_ is disabled by using configuration
+`spring.flyway.enabled=false`. This is a good option if company's databases
+are restricted and i.e. applications itself cannot create schemas.
+====
+
+[[configuration-local-deployer]]
+=== Deployer Properties
+You can use the following configuration properties of the https://github.com/spring-cloud/spring-cloud-deployer-local[Local deployer] to customize how Streams and Tasks are deployed.
+When deploying using the Data Flow shell, you can use the syntax `deployer.<appName>.local.<deployerPropertyName>`. See below for an example shell usage.
+These properties are also used when configuring <<configuration-local-tasks,Local Task Platforms>> in the Data Flow server and local platforms in Skipper for deploying Streams.
+
+[width="100%",frame="topbot",options="header"]
+|===
+|Deployer Property Name | Description | Default Value
+
+|workingDirectoriesRoot
+|Directory in which all created processes will run and create log files.
+|java.io.tmpdir
+
+|envVarsToInherit
+|Array of regular expression patterns for environment variables that are passed to launched applications.
+| <"TMP", "LANG", "LANGUAGE", "LC_.\*", "PATH", "SPRING_APPLICATION_JSON"> on windows and <"TMP", "LANG", "LANGUAGE", "LC_.*", "PATH"> on Unix
+
+|deleteFilesOnExit
+|Whether to delete created files and directories on JVM exit.
+|true
+
+|javaCmd
+|Command to run java
+|java
+
+|shutdownTimeout
+|Max number of seconds to wait for app shutdown.
+|30
+
+|javaOpts
+|The Java Options to pass to the JVM, e.g -Dtest=foo
+|<none>
+
+|inheritLogging
+|allow logging to be redirected to the output stream of the process that triggered child process.
+|false
+
+|debugPort
+|Port for remote debugging
+|<none>
+
+|===
+
+As an example, to set Java options for the time application in the `ticktock` stream, use the following stream deployment properties.
+[source,bash]
+----
+dataflow:> stream create --name ticktock --definition "time --server.port=9000 | log"
+dataflow:> stream deploy --name ticktock --properties "deployer.time.local.javaOpts=-Xmx2048m -Dtest=foo"
+----
+
+As a convenience, you can set the `deployer.memory` property to set the Java option `-Xmx`, as shown in the following example:
+
+[source,bash]
+----
+dataflow:> stream deploy --name ticktock --properties "deployer.time.memory=2048m"
+----
+
+At deployment time, if you specify an `-Xmx` option in the `deployer.<app>.local.javaOpts` property in addition to a value of the `deployer.<app>.local.memory` option, the value in the `javaOpts` property has precedence.  Also, the `javaOpts` property set when deploying the application has precedence over the Data Flow Server's `spring.cloud.deployer.local.javaOpts` property.
+
+[[configuration-local-logging]]
+=== Logging
+
+Spring Cloud Data Flow `local` server is automatically configured to use `RollingFileAppender` for logging.
+The logging configuration is located on the classpath contained in a file named `logback-spring.xml`.
+
+By default, the log file is configured to use:
+
+```
+<property name="LOG_FILE" value="${LOG_FILE:-${LOG_PATH:-${LOG_TEMP:-${java.io.tmpdir:-/tmp}}}/spring-cloud-dataflow-server}"/>
+
+```
+
+with the logback configuration for the `RollingPolicy`:
+
+----
+
+<appender name="FILE"
+			  class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${LOG_FILE}.log</file>
+		<rollingPolicy
+				class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+			<!-- daily rolling -->
+			<fileNamePattern>${LOG_FILE}.${LOG_FILE_ROLLING_FILE_NAME_PATTERN:-%d{yyyy-MM-dd}}.%i.gz</fileNamePattern>
+			<maxFileSize>${LOG_FILE_MAX_SIZE:-100MB}</maxFileSize>
+			<maxHistory>${LOG_FILE_MAX_HISTORY:-30}</maxHistory>
+			<totalSizeCap>${LOG_FILE_TOTAL_SIZE_CAP:-500MB}</totalSizeCap>
+		</rollingPolicy>
+		<encoder>
+			<pattern>${FILE_LOG_PATTERN}</pattern>
+		</encoder>
+	</appender>
+
+----
+
+To check the `java.io.tmpdir` for the current Spring Cloud Data Flow Server `local` server,
+
+```
+jinfo <pid> | grep "java.io.tmpdir"
+
+```
+
+If you want to change or override any of the properties `LOG_FILE`, `LOG_PATH`, `LOG_TEMP`, `LOG_FILE_MAX_SIZE`, `LOG_FILE_MAX_HISTORY` and `LOG_FILE_TOTAL_SIZE_CAP`, please set them as system properties.
+
+[[configuration-local-streams]]
+=== Streams
+Data Flow Server delegates to the Skipper server the management of the Stream's lifecycle.  Set the configuration property `spring.cloud.skipper.client.serverUri` to the location of Skipper, e.g.
+
+[source,bash,subs=attributes]
+----
+$ java -jar spring-cloud-dataflow-server-{project-version}.jar --spring.cloud.skipper.client.serverUri=https://192.51.100.1:7577/api
+----
+
+The configuration of show streams are deployed and to which platforms, is done by configuration of `platform accounts` on the Skipper server.
+See the documentation on https://docs.spring.io/spring-cloud-skipper/docs/current/reference/htmlsingle/#platforms[platforms] for more information.
+
+
+[[configuration-local-tasks]]
+=== Tasks
+The Data Flow server is responsible for deploying Tasks.
+Tasks that are launched by Data Flow write their state to the same database that is used by the Data Flow server.
+For Tasks which are Spring Batch Jobs, the job and step execution data is also stored in this database.
+As with streams launched by Skipper, Tasks can be launched to multiple platforms.
+If no platform is defined, a platform named `default` is created using the default values of the class https://github.com/spring-cloud/spring-cloud-deployer-local/blob/master/spring-cloud-deployer-local/src/main/java/org/springframework/cloud/deployer/spi/local/LocalDeployerProperties.java[LocalDeployerProperties], which is summarized in the table <<configuration-local-deployer,Local Deployer Properties>>
+
+To configure new platform accounts for the local platform, provide an entry under the `spring.cloud.dataflow.task.platform.local` section in your `application.yaml` file for via another Spring Boot supported mechanism.
+In the following example, two local platform accounts named `localDev` and  `localDevDebug` are created.
+The keys such as `shutdownTimeout` and `javaOpts` are local deployer properties.
+
+[source,yaml]
+----
+spring:
+  cloud:
+    dataflow:
+      task:
+        platform:
+          local:
+            accounts:
+              localDev:
+                shutdownTimeout: 60
+                javaOpts: "-Dtest=foo -Xmx1024m"
+              localDevDebug:
+                javaOpts: "-Xdebug -Xmx2048m"
+
+----
+
+TIP: By defining one platform as `default` allows you to skip using `platformName` where its use would otherwise be required.
+
+When launching a task, pass the value of the platform account name using the task launch option `--platformName`  If you do not pass a value for `platformName`, the value `default` will be used.
+
+NOTE: When deploying a task to multiple platforms, the configuration of the task needs to connect to the same database as the Data Flow Server.
+
+You can configure the Data Flow server that is running locally to deploy tasks to Cloud Foundry or Kubernetes.  See the sections on <<configuration-cloudfoundry-tasks,Cloud Foundry Task Platform Configuration>> and <<configuration-kubernetes-tasks,Kubernetes Task Platform Configuration>> for more information.
+
+Detailed examples for launching and scheduling tasks across multiple platforms, are available in this section https://dataflow.spring.io/docs/recipes/multi-platform-deployment/[Multiple Platform Support for Tasks] on http://dataflow.spring.io.
+
+===== Start Skipper
+
+[source,bash]
+----
+git clone https://github.com/spring-cloud/spring-cloud-skipper.git
+cd spring-cloud/spring-cloud-skipper
+./mvnw clean package -DskipTests=true
+java -jar spring-cloud-skipper-server/target/spring-cloud-skipper-server-2.2.0.BUILD-SNAPSHOT.jar
+----
+
+===== Start Spring Cloud Data Flow
+
+[source,bash]
+----
+git clone https://github.com/spring-cloud/spring-cloud-dataflow.git
+cd spring-cloud-dataflow
+./mvnw clean package -DskipTests=true
+cd ..
+----
+
+Create a yaml file scdf.yml with the following contents:
+
+[source,yaml]
+----
+spring:
+  cloud:
+    dataflow:
+      security:
+        authorization:
+          provider-role-mappings:
+            uaa:
+              map-oauth-scopes: true
+              role-mappings:
+                ROLE_CREATE: foo.create
+                ROLE_DEPLOY: foo.create
+                ROLE_DESTROY: foo.create
+                ROLE_MANAGE: foo.create
+                ROLE_MODIFY: foo.create
+                ROLE_SCHEDULE: foo.create
+                ROLE_VIEW: foo.view
+  security:
+    oauth2:
+      client:
+        registration:
+          uaa:
+            redirect-uri: '{baseUrl}/login/oauth2/code/{registrationId}'
+            authorization-grant-type: authorization_code
+            client-id: dataflow
+            client-secret: dataflow
+            scope:                                                       <1>
+            - openid
+            - foo.create
+            - foo.view
+        provider:
+          uaa:
+            jwk-set-uri: http://uaa:8080/uaa/token_keys
+            token-uri: http://uaa:8080/uaa/oauth/token
+            user-info-uri: http://uaa:8080/uaa/userinfo                  <2>
+            user-name-attribute: user_name
+            authorization-uri: http://uaa:8080/uaa/oauth/authorize
+      resourceserver:
+        opaquetoken:                                                     <3>
+          introspection-uri: http://uaa:8080/uaa/introspect
+          client-id: dataflow
+          client-secret: dataflow
+----
+
+<1> If you use scopes to identify roles, please make sure to also request
+    the relevant scopes, e.g `dataflow.view`, `dataflow.create` and don't forget to request the `openid` scope
+<2> Used to retrieve profile information, e.g. username for display purposes (mandatory)
+<3> Used for token introspection and validation (mandatory)
+
+The `introspection-uri` property is especially important when passing an externally retrieved (opaque)
+OAuth Access Token to Spring Cloud Data Flow. In that case Spring Cloud Data Flow will take the OAuth Access,
+and use the UAA's https://docs.cloudfoundry.org/api/uaa/version/74.4.0/index.html#introspect-token[Introspect Token Endpoint]
+to not only check the validity of the token but also retrieve the associated OAuth scopes from the UAA
+
+Finally startup Spring Cloud Data Flow:
+
+[source,bash]
+----
+java -jar spring-cloud-dataflow/spring-cloud-dataflow-server/target/spring-cloud-dataflow-server-2.4.0.BUILD-SNAPSHOT.jar --spring.config.additional-location=scdf.yml
+----
+
+[[configuration-security-role-mapping]]
+===== Role Mappings
+
+By default all roles are assigned to users that login to Spring Cloud Data Flow.
+However, you can set the property:
+
+`spring.cloud.dataflow.security.authorization.provider-role-mappings.uaa.map-oauth-scopes: true`
+
+This will instruct the underlying `DefaultAuthoritiesExtractor` to map
+OAuth scopes to the respective authorities. The following scopes are supported:
+
+* Scope `dataflow.create` maps to the `CREATE` role
+* Scope `dataflow.deploy` maps to the `DEPLOY` role
+* Scope `dataflow.destroy` maps to the `DESTROY` role
+* Scope `dataflow.manage` maps to the `MANAGE` role
+* Scope `dataflow.modify` maps to the `MODIFY` role
+* Scope `dataflow.schedule` maps to the `SCHEDULE` role
+* Scope `dataflow.view` maps to the `VIEW` role
+
+Additionally you can also map arbitrary scopes to each of the Data Flow roles:
+
+[source,yaml]
+----
+spring:
+  cloud:
+    dataflow:
+      security:
+        authorization:
+          provider-role-mappings:
+            uaa:
+              map-oauth-scopes: true                                    # <1>
+              role-mappings:
+                ROLE_CREATE: dataflow.create                            # <2>
+                ROLE_DEPLOY: dataflow.deploy
+                ROLE_DESTROY: dataflow.destoy
+                ROLE_MANAGE: dataflow.manage
+                ROLE_MODIFY: dataflow.modify
+                ROLE_SCHEDULE: dataflow.schedule
+                ROLE_VIEW: dataflow.view
+----
+
+<1> Enables explicit mapping support from OAuth scopes to Data Flow roles
+<2> When role mapping support is enabled, you must provide a mapping for
+all 7 Spring Cloud Data Flow roles *ROLE_CREATE*, *ROLE_DEPLOY*, *ROLE_DESTROY*, *ROLE_MANAGE*, *ROLE_MODIFY*, *ROLE_SCHEDULE*, *ROLE_VIEW*.
+
+[TIP]
+====
+You can assign an OAuth scope to multiple Spring Cloud Data Flow roles, giving you flexible regarding the granularity of your authorization configuration.
+====
+
+[[configuration-security-ldap-authentication]]
+==== LDAP Authentication
+
+LDAP Authentication (Lightweight Directory Access Protocol) is indirectly
+provided by Spring Cloud Data Flow using the UAA. The UAA itself provides
+https://github.com/cloudfoundry/uaa/blob/develop/docs/UAA-LDAP.md[comprehensive LDAP support].
+
+[IMPORTANT]
+====
+While you may use your own OAuth2 authentication server, the LDAP support
+documented here requires using the UAA as authentication server. For any
+other provider, please consult the documentation for that particular provider.
+====
+
+The UAA supports authentication against an LDAP (Lightweight Directory Access Protocol)
+server using the following modes:
+
+* https://github.com/cloudfoundry/uaa/blob/develop/docs/UAA-LDAP.md#ldap-search-and-bind[Direct bind]
+* https://github.com/cloudfoundry/uaa/blob/develop/docs/UAA-LDAP.md#ldap-bind[Search and bind]
+* https://github.com/cloudfoundry/uaa/blob/develop/docs/UAA-LDAP.md#ldap-search-and-compare[Search and Compare]
+
+[NOTE]
+====
+When integrating with an external identity provider such as LDAP, authentication
+within the UAA becomes *chained*. UAA first attempts to authenticate with
+a user's credentials against the UAA user store before the external provider,
+LDAP. For more information, see
+https://github.com/cloudfoundry/uaa/blob/develop/docs/UAA-LDAP.md#chained-authentication[Chained Authentication]
+in the _User Account and Authentication LDAP Integration_ GitHub documentation.
+====
+
+[[configuration-security-ldap-role-mapping]]
+===== LDAP Role Mapping
+
+The OAuth2 authentication server (UAA), provides comprehensive support
+for https://github.com/cloudfoundry/uaa/blob/develop/docs/UAA-LDAP.md#scopes[mapping LDAP groups to OAuth scopes].
+
+The following options exist:
+
+* `ldap/ldap-groups-null.xml` No groups will be mapped
+* `ldap/ldap-groups-as-scopes.xml` Group names will be retrieved from an LDAP attribute. E.g. `CN`
+* `ldap/ldap-groups-map-to-scopes.xml` Groups will be mapped to UAA groups using the external_group_mapping table
+
+These values are specified via the configuration property `ldap.groups.file controls`. Under the covers
+these values reference a Spring XML configuration file.
+
+[TIP]
+====
+During test and development it might be necessary to make frequent changes
+to LDAP groups and users and see those reflected in the UAA. However, user
+information is cached for the duration of the login. The following script
+helps to retrieve the updated information quickly:
+
+[source,bash]
+----
+#!/bin/bash
+uaac token delete --all
+uaac target http://localhost:8080/uaa
+uaac token owner get cf <username> -s "" -p  <password>
+uaac token client get admin -s adminsecret
+uaac user get <username>
+----
+====
+
+[[configuration-security-ldap-uaa-example]]
+===== LDAP Security and UAA Example Application
+
+In order to get up and running quickly and to help you understand the security architecture, we
+provide the https://github.com/spring-cloud/spring-cloud-dataflow-samples/tree/master/security-ldap-uaa-example[LDAP Security and UAA Example]
+on GitHub.
+
+[IMPORTANT]
+====
+This is solely a demo/example application and shall not be used in production.
+====
+
+The setup consists of:
+
+* Spring Cloud Data Flow Server
+* Skipper Server
+* CloudFoundry User Account and Authentication (UAA) Server
+* Lightweight Directory Access Protocol (LDAP) Server (provided by https://directory.apache.org/[Apache Directory Server] (ApacheDS))
+
+Ultimately, as part of this example, you will learn how to configure and launch
+a Composed Task using this security setup.
+
+[[configuration-security-spring-security-oauth2-example]]
+==== Spring Security OAuth2 Resource/Authorization Server Sample
+
+For local testing and development, you may also use the Resource and Authorization
+Server support provided by
+https://projects.spring.io/spring-security-oauth/[Spring Security OAuth]. It
+allows you to easily create your own (very basic) OAuth2 Server with the following simple annotations:
+
+* `@EnableResourceServer`
+* `@EnableAuthorizationServer`
+
+NOTE: In fact the UAA uses Spring Security OAuth2 under the covers, thus the basic endpoints
+are the same.
+
+A working example application can be found at:
+https://github.com/ghillert/oauth-test-server/[https://github.com/ghillert/oauth-test-server/]
+
+Clone the project and configure Spring Cloud Data Flow with the respective Client ID and Client Secret:
+
+[source,yaml]
+----
+security:
+  oauth2:
+    client:
+      client-id: myclient
+      client-secret: mysecret
+      access-token-uri: http://127.0.0.1:9999/oauth/token
+      user-authorization-uri: http://127.0.0.1:9999/oauth/authorize
+    resource:
+      user-info-uri: http://127.0.0.1:9999/me
+      token-info-uri: http://127.0.0.1:9999/oauth/check_token
+----
+
+IMPORTANT: This sample application is not intended for production use
+
+[[configuration-security-shell-authentication]]
+==== Data Flow Shell Authentication
+
+When using the Shell, the credentials can either be provided via username and password
+or by specifying a _credentials-provider_ command. If your OAuth2 provider supports
+the _Password_ Grant Type you can start the _Data Flow Shell_ with:
+
+[source,bash,subs=attributes+]
+----
+$ java -jar spring-cloud-dataflow-shell-{project-version}.jar         \
+  --dataflow.uri=http://localhost:9393                                \   # <1>
+  --dataflow.username=my_username                                     \   # <2>
+  --dataflow.password=my_password                                     \   # <3>
+  --skip-ssl-validation  true                                         \   # <4>
+----
+
+<1> Optional, defaults to http://localhost:9393.
+<2> Mandatory.
+<3> If the password is not provided, the user is prompted for it.
+<4> Optional, defaults to `false`, ignores certificate errors (when using self-signed certificates). Use cautiously!
+
+
+NOTE: Keep in mind that when authentication for Spring Cloud Data Flow is enabled,
+the underlying OAuth2 provider *must* support the _Password_ OAuth2 Grant Type
+if you want to use the Shell via username/password authentication.
+
+From within the Data Flow Shell you can also provide credentials by using the following command:
+
+[source,bash]
+----
+server-unknown:>dataflow config server                                \
+  --uri  http://localhost:9393                                        \   # <1>
+  --username myuser                                                   \   # <2>
+  --password mysecret                                                 \   # <3>
+  --skip-ssl-validation  true                                         \   # <4>
+----
+
+<1> Optional, defaults to http://localhost:9393.
+<2> Mandatory..
+<3> If security is enabled, and the password is not provided, the user is prompted for it.
+<4> Optional, ignores certificate errors (when using self-signed certificates). Use cautiously!
+
+The following image shows a typical shell command to connect to and authenticate a Data
+Flow Server:
+
+.Target and Authenticate with the Data Flow Server from within the Shell
+image::{dataflow-asciidoc}/images/dataflow-security-shell-target.png[Target and Authenticate with the Data Flow Server from within the Shell, scaledwidth="100%"]
+
+Once successfully targeted, you should see the following output:
+
+[source,bash]
+----
+dataflow:>dataflow config info
+dataflow config info
+
+╔═══════════╤═══════════════════════════════════════╗
+║Credentials│[username='my_username, password=****']║
+╠═══════════╪═══════════════════════════════════════╣
+║Result     │                                       ║
+║Target     │http://localhost:9393                  ║
+╚═══════════╧═══════════════════════════════════════╝
+----
+
+Alternatively, you can specify the _credentials-provider_ command in order to
+pass-in a bearer token directly, instead of providing a username and password.
+This works from within the shell or by providing the
+`--dataflow.credentials-provider-command` command-line argument when starting the Shell.
+
+[IMPORTANT]
+====
+When using the _credentials-provider_ command, please be aware that your
+specified command *must* return a _Bearer token_ (Access Token prefixed with _Bearer_).
+For instance, in Unix environments the following simplistic command can be used:
+
+[source,bash,subs=attributes]
+----
+$ java -jar spring-cloud-dataflow-shell-{project-version}.jar \
+  --dataflow.uri=http://localhost:9393 \
+  --dataflow.credentials-provider-command="echo Bearer 123456789"
+----
+
+====
+
+=== About Configuration
+The Spring Cloud Data Flow About Restful API result contains a display name,
+version, and, if specified, a URL for each of the major dependencies that
+comprise Spring Cloud Data Flow.  The result (if enabled) also contains the
+sha1 and or sha256 checksum values for the shell dependency. The information
+that is returned for each of the dependencies is configurable by setting the following
+properties:
+
+* spring.cloud.dataflow.version-info.spring-cloud-dataflow-core.name: the
+name to be used for the core.
+* spring.cloud.dataflow.version-info.spring-cloud-dataflow-core.version:
+the version to be used for the core.
+* spring.cloud.dataflow.version-info.spring-cloud-dataflow-dashboard.name: the
+name to be used for the dashboard.
+* spring.cloud.dataflow.version-info.spring-cloud-dataflow-dashboard.version:
+the version to be used for the dashboard.
+* spring.cloud.dataflow.version-info.spring-cloud-dataflow-implementation.name: the
+name to be used for the implementation.
+* spring.cloud.dataflow.version-info.spring-cloud-dataflow-implementation.version:
+the version to be used for the implementation.
+* spring.cloud.dataflow.version-info.spring-cloud-dataflow-shell.name: the
+name to be used for the shell.
+* spring.cloud.dataflow.version-info.spring-cloud-dataflow-shell.version:
+the version to be used for the shell.
+* spring.cloud.dataflow.version-info.spring-cloud-dataflow-shell.url:
+the URL to be used for downloading the shell dependency.
+* spring.cloud.dataflow.version-info.spring-cloud-dataflow-shell.checksum-sha1: the sha1
+checksum value that is returned with the shell dependency info.
+* spring.cloud.dataflow.version-info.spring-cloud-dataflow-shell.checksum-sha256:
+the sha256 checksum value that is returned with the shell dependency info.
+* spring.cloud.dataflow.version-info.spring-cloud-dataflow-shell.checksum-sha1-url:
+if the `spring.cloud.dataflow.version-info.spring-cloud-dataflow-shell.checksum-sha1`
+is not specified, SCDF uses the contents of the file specified at this URL for the checksum.
+* spring.cloud.dataflow.version-info.spring-cloud-dataflow-shell.checksum-sha256-url:
+if the `spring.cloud.dataflow.version-info.spring-cloud-dataflow-shell.checksum-sha256`
+is not specified, SCDF uses the contents of the file specified at this URL for the checksum.
+
+==== Enabling Shell Checksum values
+By default, checksum values are not displayed for the shell dependency. If
+you need this feature enabled, set the
+`spring.cloud.dataflow.version-info.dependency-fetch.enabled` property to true.
+
+==== Reserved Values for URLs
+There are reserved values (surrounded by curly braces) that you can insert into
+the URL that will make sure that the links are up to date:
+
+* repository: if using a build-snapshot, milestone, or release candidate of
+Data Flow, the repository refers to the repo-spring-io repository. Otherwise, it
+refers to Maven Central.
+* version: Inserts the version of the jar/pom.
+
+For example,
+`https://myrepository/org/springframework/cloud/spring-cloud-dataflow-shell/\{version}/spring-cloud-dataflow-shell-\{version}.jar`
+produces
+`https://myrepository/org/springframework/cloud/spring-cloud-dataflow-shell/1.2.3.RELEASE/spring-cloud-dataflow-shell-1.2.3.RELEASE.jar`
+if you were using the 1.2.3.RELEASE version of the Spring Cloud Data Flow Shell
