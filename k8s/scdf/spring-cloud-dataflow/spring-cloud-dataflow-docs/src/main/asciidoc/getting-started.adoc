@@ -1,6 +1,0 @@
-[[getting-started]]
-= Getting Started
-
-include::getting-started-local.adoc[]
-include::getting-started-cloudfoundry.adoc[]
-include::getting-started-kubernetes.adoc[]

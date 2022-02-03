@@ -1,2 +1,0 @@
-#!/bin/bash
-docker build -t projects.registry.vmware.com/scdf/uaa-test:4.32 .

@@ -1,3 +1,0 @@
-= Spring Cloud Dataflow Tasklauncher Sink Application for Kafka Binder
-
-See link:../spring-cloud-dataflow-tasklauncher-sink/README.adoc[Tasklauncher sink documentation]
