@@ -114,6 +114,7 @@ Erreichbar via Konfiguration in DBeaver: http://clickhouse.mariusdev.net/ Port 8
 
 
 #K8s Cheatsheet
+Delete all Pods in Namespace: kubectl delete --all pods --namespace=foo
 Delete all Terminated/Evicted Pods in Namespace "harbor-system": kubectl get pod -n harbor-system | egrep -i  'Evicted|Terminated' | awk '{print $1}' | xargs kubectl delete pod -n harbor-system
 Delete unused replicasets: kubectl delete $(kubectl get all | grep replicaset.apps | grep "0         0         0" | cut -d' ' -f 1)
 Default Namespace: kubectl get pod | egrep -i  'Evicted|Terminated' | awk '{print $1}' | xargs kubectl delete pod 
@@ -123,6 +124,8 @@ Change namespace: kubens monitoring
 Untaint master: kubectl taint nodes --all node-role.kubernetes.io/master-
 Run pod with ping and nslookup: kubectl run -it --rm --restart=Never --image=infoblox/dnstools:latest dnstools
 Decode base-64-encoded secret: echo "cm9vdA=="| base64 --decode
+
+Erreichen von Services durch Pods aus anderen Namespaces: siehe /kafka-demo/k8s/clickhouse/clickhouseDB-service-in-scdf-ns.yml (Type: ExternalName, https://stackoverflow.com/a/44329470/3649685)
 
 #Bash cheatsheet
 Ctrl + R: backward search
