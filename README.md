@@ -72,10 +72,11 @@ http://producer.mariusdev.net/hallo
 http://kafdrop.mariusdev.net/hallo
 http://kafkademo.mariusdev.net/kafkaconsume/hallo
 http://kafkademo.mariusdev.net/kafkaproduce/hallo
-http://prometheus.mariusdev.net/prometheus
+http://prometheus.mariusdev.net/graph
 http://grafana.mariusdev.net/ (admin/dspdsp)
 http://clickhouse.mariusdev.net/
-harbor: https://100.0.0.2:30099/ (admin/Harbor12345)
+harbor: https://172.16.8.11:30099/ (admin/Harbor12345)
+SCDF Dashboard: https://scdf.mariusdev.net/dashboard
 
 Ingress muss folgende Annotation haben:
 kubernetes.io/ingress.class: nginx
@@ -87,21 +88,26 @@ Token k8s Dashboard: eyJhbGciOiJSUzI1NiIsImtpZCI6IkJoRkVZY3hmTW1LVkh1ajI0bHF4dnd
 
 
 #DOCKER
-- Harbor: https://100.0.0.2:30099
+- Harbor: https://172.16.8.11:30099
 username: admin
 password: Harbor12345
 
-Zugriff via Windows Docker: docker push 100.0.0.2:30099/library/nginx:v3
+Zugriff via Windows Docker: docker push 172.16.8.11:30099/library/nginx:v3
 -Zertifikat (.crt) installieren via Doppelklick
 -Docker Daemon neustarten
 
 Harbor Notes
 -Installation via Helm: 
 helm repo add harbor https://helm.goharbor.io
-helm install my-harbor harbor/harbor -n harbor-system --set expose.type="nodePort" --set expose.nodePort.ports.https.nodePort=30099 --set expose.tls.auto.commonName="100.0.0.2" --set externalURL="https://172.16.8.11:30099" --create-namespace
--Zertifikat aus UI installieren mit update-ca-certificates
+helm install my-harbor harbor/harbor -n harbor-system --set expose.type="nodePort" --set expose.nodePort.ports.https.nodePort=30099 --set expose.tls.auto.commonName="100.0.0.2" --set externalURL="https://100.0.0.2:30099" --create-namespace
+-Zertifikat aus UI installieren mit update-ca-certificates (https://manuals.gfi.com/en/kerio/connect/content/server-configuration/ssl-certificates/adding-trusted-root-certificates-to-the-server-1605.html)
 -Nodes neustarten: https://www.ibm.com/support/pages/steps-follow-while-restarting-kubernetes-and-docker-infosphere-information-server-installations
+-Auf allen Nodes: sudo docker login https://172.16.8.11:30099/
 
+kubectl create secret docker-registry regcred --docker-server=100.0.0.2:30099 --docker-username=admin --docker-password=Harbor12345 --docker-email=test@mail.de
+
+sudo cp ca.crt /usr/local/share/ca-certificates/
+sudo update-ca-certificates
 
 #Clickhouse
 Erreichbar via Konfiguration in DBeaver: http://clickhouse.mariusdev.net/ Port 80
@@ -115,7 +121,8 @@ Re-deploy ohne Veränderung von Service: kubectl -n monitoring rollout restart d
 List env-Vars of Pod: kubectl exec -it pod/grafana-6d9d65bb75-l5w4x -n monitoring -- printenv
 Change namespace: kubens monitoring
 Untaint master: kubectl taint nodes --all node-role.kubernetes.io/master-
-
+Run pod with ping and nslookup: kubectl run -it --rm --restart=Never --image=infoblox/dnstools:latest dnstools
+Decode base-64-encoded secret: echo "cm9vdA=="| base64 --decode
 
 #Bash cheatsheet
 Ctrl + R: backward search
@@ -126,3 +133,53 @@ Ctrl + Shift + R: move back after
 2. Install-Button auf Webseite (unten rechts klein: DOwnload)
 3. In Verzeichnis dann values.yaml anpassen
 4. Installieren des Charts in neuem elk-Namespace: helm install filebeat . -n elk --create-namespace
+
+#Install Kubens
+sudo vim /etc/apt/sources.list
+
+#for kubectlx
+deb [trusted=yes] http://ftp.de.debian.org/debian buster main
+
+sudo apt-get update
+sudo apt install kubectx
+
+
+#Kafdrop
+helm install --set kafka.enabled=false --set kafka.bootstrapServers=my-release-kafka-headless.default.svc.cluster.local:9092 ktool rhcharts/kafdrop
+
+# ingress-nginx
+https://kubernetes.github.io/ingress-nginx/deploy/#bare-metal-clusters
+
+
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.1.1/deploy/static/provider/baremetal/deploy.yaml
+
+In nginx-controller-deployment ergänzen:
+template:
+  spec:
+    hostNetwork: true (siehe Abschnitt "via the Host Network" -> https://kubernetes.github.io/ingress-nginx/deploy/baremetal/)
+	
+# ELK
+Bei Filebeat: aus DaemonSet ressource-limits und requests entfernen	
+
+# Grafana
+Permission denied: Rechte ändern von gemountetem PV-Ordner: sudo chown -R 472:472 /data/pv/grafana-pv/
+
+# SCDF
+Mysql: root/yourpassword
+
+kubectl create -f src/kubernetes/server/server-rolebinding.yaml (v1 statt v1beta)
+
+Deployte Apps sollen nur wenige Ressourcen requesten:
+kubectl edit deployment.apps/skipper
+
+- name: SPRING_CLOUD_SKIPPER_SERVER_PLATFORM_KUBERNETES_ACCOUNTS_DEFAULT_REQUESTS_MEMORY
+          value: 1Mi
+- name: SPRING_CLOUD_SKIPPER_SERVER_PLATFORM_KUBERNETES_ACCOUNTS_DEFAULT_REQUESTS_CPU
+          value: 1m
+
+
+#SCDF Proxy
+wget 10.233.63.175:8080/metrics/connected
+wget 10.233.63.175:8080/metrics/proxy
+
+STAND: komische Logs bei SCDF, Permissiondenied ...

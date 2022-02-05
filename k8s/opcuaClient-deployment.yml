@@ -24,7 +24,7 @@ spec:
             - name: OPCUA_PORT
               value: "4334"
             - name: OPCUA_SERVERADDRESS
-              value: "10.233.43.6"  
+              value: "10.233.23.139"  
       imagePullSecrets:
         - name: regcred   
 ---
