@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: clickhouse-db
+  namespace: scdf
+spec:
+  type: ExternalName
+  externalName: clickhouse-db.default.svc.cluster.local
+  ports:
+  - port: 8123       
+
