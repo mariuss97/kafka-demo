@@ -184,6 +184,7 @@ kubectl edit deployment.apps/skipper
 - name: SPRING_CLOUD_SKIPPER_SERVER_PLATFORM_KUBERNETES_ACCOUNTS_DEFAULT_REQUESTS_CPU
           value: 1m
 
+Streamen in eigenes, selbst definiertes Topic (DSL-Format): opcsrc100 > :myOwnTopic
 
 #SCDF Proxy
 wget 10.233.63.175:8080/metrics/connected
