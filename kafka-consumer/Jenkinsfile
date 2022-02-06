@@ -40,7 +40,7 @@ node {
     }
 	
 	stage("Push Image to Harbor"){
-        sh 'docker push 100.0.0.2:30099/kafka-demo-consumer:latest'
+        sh 'docker push 100.0.0.2:30099/library/kafka-demo-consumer:latest'
     }
     
     
