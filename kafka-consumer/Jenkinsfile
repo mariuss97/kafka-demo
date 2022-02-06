@@ -22,15 +22,28 @@ node {
         sh 'docker tag kafka-demo-consumer mariuss97/kafka-demo-consumer:latest'
     } 
     
+/*  Use public Dockerhub  
     stage("Docker Login"){
         withCredentials([string(credentialsId: 'DOCKER_HUB_PASSWORD', variable: 'PASSWORD')]) {
             sh 'docker login -u mariuss97 -p $PASSWORD'
         }
-    } 
-    
-    stage("Push Image to Docker Hub"){
+    }
+	stage("Push Image to Docker Hub"){
         sh 'docker push  mariuss97/kafka-demo-consumer:latest'
     }
+	*/
+	
+	stage("Docker Login Harbor"){
+        withCredentials([string(credentialsId: 'HARBOR_PASSWORD', variable: 'PASSWORD')]) {
+            sh 'docker login 100.0.0.2:30099 -u admin -p $PASSWORD'
+        }
+    }
+	
+	stage("Push Image to Harbor"){
+        sh 'docker push 100.0.0.2:30099/kafka-demo-consumer:latest'
+    }
+    
+    
     
     stage("SSH Into k8s Server") {
         def remote = [:]
