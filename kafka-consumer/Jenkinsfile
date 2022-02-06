@@ -19,19 +19,8 @@ node {
 		}
         //sh 'docker build -t kafka-demo-consumer -f kafka-consumer/Dockerfile .'
         sh 'docker image list'
-        sh 'docker tag kafka-demo-consumer mariuss97/kafka-demo-consumer:latest'
+        sh 'docker tag kafka-demo-consumer 100.0.0.2:30099/library/kafka-demo-consumer:latest'
     } 
-    
-/*  Use public Dockerhub  
-    stage("Docker Login"){
-        withCredentials([string(credentialsId: 'DOCKER_HUB_PASSWORD', variable: 'PASSWORD')]) {
-            sh 'docker login -u mariuss97 -p $PASSWORD'
-        }
-    }
-	stage("Push Image to Docker Hub"){
-        sh 'docker push  mariuss97/kafka-demo-consumer:latest'
-    }
-	*/
 	
 	stage("Docker Login Harbor"){
         withCredentials([string(credentialsId: 'HARBOR_PASSWORD', variable: 'PASSWORD')]) {
@@ -42,6 +31,29 @@ node {
 	stage("Push Image to Harbor"){
         sh 'docker push 100.0.0.2:30099/library/kafka-demo-consumer:latest'
     }
+    
+/*  Use public Dockerhub  
+    stage("Docker build and tag"){
+        sh 'docker version'
+		dir("kafka-consumer"){
+		sh 'docker build -t kafka-demo-consumer .'
+		}
+        //sh 'docker build -t kafka-demo-consumer -f kafka-consumer/Dockerfile .'
+        sh 'docker image list'
+        sh 'docker tag kafka-demo-consumer mariuss97/kafka-demo-consumer:latest'
+    } 
+
+	stage("Docker Login"){
+        withCredentials([string(credentialsId: 'DOCKER_HUB_PASSWORD', variable: 'PASSWORD')]) {
+            sh 'docker login -u mariuss97 -p $PASSWORD'
+        }
+    }
+	stage("Push Image to Docker Hub"){
+        sh 'docker push  mariuss97/kafka-demo-consumer:latest'
+    }
+	*/
+	
+	
     
     
     
