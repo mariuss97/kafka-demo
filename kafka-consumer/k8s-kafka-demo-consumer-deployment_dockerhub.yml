@@ -14,15 +14,13 @@ spec:
     spec:
       containers:
         - name: kafka-demo-consumer
-          image: 100.0.0.2:30099/library/kafka-demo-consumer:latest
+          image: mariuss97/kafka-demo-consumer:latest
           imagePullPolicy: Always
           ports:
             - containerPort: 8091
           env:
             - name: PORT
               value: "8091"
-      imagePullSecrets:
-        - name: regcred
 ---
 apiVersion: v1
 kind: Service
