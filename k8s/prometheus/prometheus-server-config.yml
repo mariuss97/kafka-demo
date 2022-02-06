@@ -32,39 +32,57 @@ data:
 
     scrape_configs:
     
-      - job_name: 'proxied-applications'
-        metrics_path: '/metrics/connected'
-        kubernetes_sd_configs:
-          - role: pod
-            namespaces:
-              names:
-                - default
-        relabel_configs:
-          - source_labels: [__meta_kubernetes_pod_label_app]
-            action: keep
-            regex: prometheus-proxy
-          - source_labels: [__meta_kubernetes_pod_container_port_number]
-            action: keep
-            regex: 8080
-      - job_name: 'proxies'
+#      - job_name: 'proxied-applications'
+#        metrics_path: '/metrics/connected'
+#        kubernetes_sd_configs:
+#          - role: pod
+#            namespaces:
+#              names:
+#                - default
+#        relabel_configs:
+#          - source_labels: [__meta_kubernetes_pod_label_app]
+#            action: keep
+#            regex: prometheus-proxy
+#          - source_labels: [__meta_kubernetes_pod_container_port_number]
+#            action: keep
+#            regex: 8080
+#      - job_name: 'proxies'
+#        metrics_path: '/metrics/proxy'
+#        kubernetes_sd_configs:
+#          - role: pod
+#            namespaces:
+#              names:
+#                - default
+#        relabel_configs:
+#          - source_labels: [__meta_kubernetes_pod_label_app]
+#            action: keep
+#            regex: prometheus-proxy
+#          - source_labels: [__meta_kubernetes_pod_container_port_number]
+#            action: keep
+#            regex: 8080
+#          - action: labelmap
+#            regex: __meta_kubernetes_pod_label_(.+)
+#          - source_labels: [__meta_kubernetes_pod_name]
+#            action: replace
+#            target_label: kubernetes_pod_name 
+        
+      - job_name: 'local-rsocket-proxy'
+        honor_timestamps: true
+        scrape_interval: 10s
+        scrape_timeout: 9s
         metrics_path: '/metrics/proxy'
-        kubernetes_sd_configs:
-          - role: pod
-            namespaces:
-              names:
-                - default
-        relabel_configs:
-          - source_labels: [__meta_kubernetes_pod_label_app]
-            action: keep
-            regex: prometheus-proxy
-          - source_labels: [__meta_kubernetes_pod_container_port_number]
-            action: keep
-            regex: 8080
-          - action: labelmap
-            regex: __meta_kubernetes_pod_label_(.+)
-          - source_labels: [__meta_kubernetes_pod_name]
-            action: replace
-            target_label: kubernetes_pod_name 
+        scheme: http
+        static_configs:
+          - targets: ['prometheus-proxy.scdf.svc.cluster.local:8080'] 
+
+      - job_name: 'local-rsocket-connected'
+        honor_timestamps: true
+        scrape_interval: 10s
+        scrape_timeout: 9s
+        metrics_path: '/metrics/connected'
+        scheme: http
+        static_configs:
+          - targets: ['prometheus-proxy.scdf.svc.cluster.local:8080']         
     
       - job_name: 'clickhouse-sink'
         metrics_path: '/actuator/prometheus'
