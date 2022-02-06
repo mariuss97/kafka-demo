@@ -30,8 +30,7 @@ data:
         - targets:
           - "alertmanager.monitoring.svc:9093"
 
-    scrape_configs:
-    
+#    scrape_configs:
 #      - job_name: 'proxied-applications'
 #        metrics_path: '/metrics/connected'
 #        kubernetes_sd_configs:
@@ -64,8 +63,8 @@ data:
 #            regex: __meta_kubernetes_pod_label_(.+)
 #          - source_labels: [__meta_kubernetes_pod_name]
 #            action: replace
-#            target_label: kubernetes_pod_name 
-        
+#            target_label: kubernetes_pod_name     
+    scrape_configs:
       - job_name: 'local-rsocket-proxy'
         honor_timestamps: true
         scrape_interval: 10s
