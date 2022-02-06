@@ -18,8 +18,30 @@ node {
 		sh 'docker build -t kafka-demo-producer .'
 		}
         sh 'docker image list'
+        sh 'docker tag kafka-demo-producer 100.0.0.2:30099/library/kafka-demo-producer:latest'
+    } 
+	
+	stage("Docker Login Harbor"){
+        withCredentials([string(credentialsId: 'HARBOR_PASSWORD', variable: 'PASSWORD')]) {
+            sh 'docker login 100.0.0.2:30099 -u admin -p $PASSWORD'
+        }
+    }
+	
+	stage("Push Image to Harbor"){
+        sh 'docker push 100.0.0.2:30099/library/kafka-demo-producer:latest'
+    }
+	
+	/* Use public Dockerhub
+	stage("Docker build and tag"){
+        sh 'docker version'
+		dir("kafka-producer"){
+		sh 'docker build -t kafka-demo-producer .'
+		}
+        sh 'docker image list'
         sh 'docker tag kafka-demo-producer mariuss97/kafka-demo-producer:latest'
     } 
+	
+	
     
     stage("Docker Login"){
         withCredentials([string(credentialsId: 'DOCKER_HUB_PASSWORD', variable: 'PASSWORD')]) {
@@ -30,6 +52,7 @@ node {
     stage("Push Image to Docker Hub"){
         sh 'docker push  mariuss97/kafka-demo-producer:latest'
     }
+	*/
     
     stage("SSH Into k8s Server") {
         def remote = [:]

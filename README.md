@@ -1,7 +1,9 @@
-Permission denied gradlew: git update-index --chmod=+x gradlew
 
-Node1: 100.0.0.2
-Node2: 100.0.0.3
+
+AMaster: 100.0.0.1
+KMaster: 100.0.0.2
+KWorker: 100.0.0.3
+Jenkins: 100.0.0.4 (admin/admin)
 
 Producer: 8090
 Consumer: 8091
@@ -125,11 +127,13 @@ Untaint master: kubectl taint nodes --all node-role.kubernetes.io/master-
 Run pod with ping and nslookup: kubectl run -it --rm --restart=Never --image=infoblox/dnstools:latest dnstools
 Decode base-64-encoded secret: echo "cm9vdA=="| base64 --decode
 
-Erreichen von Services durch Pods aus anderen Namespaces: siehe /kafka-demo/k8s/clickhouse/clickhouseDB-service-in-scdf-ns.yml (Type: ExternalName, https://stackoverflow.com/a/44329470/3649685)
+((Erreichen von Services durch Pods aus anderen Namespaces: siehe /kafka-demo/k8s/clickhouse/clickhouseDB-service-in-scdf-ns.yml (Type: ExternalName, https://stackoverflow.com/a/44329470/3649685)
 
 #Bash cheatsheet
 Ctrl + R: backward search
 Ctrl + Shift + R: move back after 
+Curl and Pretty-Format-JSON: curl 10.233.34.215:8080/actuator/configprops | python -mjson.tool > out.json
+Vim-Search: /suchwort , dann Enter und mit n vorwaertssuche, N rueckwaertssuche
 
 #Install Helm Charts
 1. Herunterladen von Package via ArtifactRepo: z.B. https://artifacthub.io/packages/helm/elastic/kibana
@@ -186,3 +190,15 @@ wget 10.233.63.175:8080/metrics/connected
 wget 10.233.63.175:8080/metrics/proxy
 
 STAND: komische Logs bei SCDF, Permissiondenied ...
+
+# Actuator
+Change Loglevel during Runtime: curl -X "POST" "10.233.34.215:8080/actuator/loggers/de.marius" -H "Content-Type: application/json; charset=utf-8"   -d $'{ "configuredLevel": "WARN" }'
+Get actual Log-Config: curl 10.233.34.215:8080/actuator/loggers | python -mjson.tool > loggers_after.json
+
+# Install Jenkinsserver
+apt-get update Problem:
+sudo apt install ca-certificates
+
+Permission denied gradlew: git update-index --chmod=+x gradlew
+
+Restart after groupadd jenkins to dockergroup
