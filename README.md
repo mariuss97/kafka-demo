@@ -79,6 +79,7 @@ http://grafana.mariusdev.net/ (admin/dspdsp)
 http://clickhouse.mariusdev.net/
 harbor: https://172.16.8.11:30099/ (admin/Harbor12345)
 SCDF Dashboard: https://scdf.mariusdev.net/dashboard
+Kibana: https://kibana.mariusdev.net/
 
 Ingress muss folgende Annotation haben:
 kubernetes.io/ingress.class: nginx
@@ -98,7 +99,7 @@ Zugriff via Windows Docker: docker push 172.16.8.11:30099/library/nginx:v3
 -Zertifikat (.crt) installieren via Doppelklick
 -Docker Daemon neustarten
 
-Harbor Notes
+#Harbor Notes
 -Installation via Helm: 
 helm repo add harbor https://helm.goharbor.io
 helm install my-harbor harbor/harbor -n harbor-system --set expose.type="nodePort" --set expose.nodePort.ports.https.nodePort=30099 --set expose.tls.auto.commonName="100.0.0.2" --set externalURL="https://100.0.0.2:30099" --create-namespace
@@ -116,6 +117,7 @@ Erreichbar via Konfiguration in DBeaver: http://clickhouse.mariusdev.net/ Port 8
 
 
 #K8s Cheatsheet
+Force deletion of Pod: kubectl delete pod/scdf-server-5c6fbc77c8-jdxp5 --grace-period=0 --force
 Delete all Pods in Namespace: kubectl delete --all pods --namespace=foo
 Delete all Terminated/Evicted Pods in Namespace "harbor-system": kubectl get pod -n harbor-system | egrep -i  'Evicted|Terminated' | awk '{print $1}' | xargs kubectl delete pod -n harbor-system
 Delete unused replicasets: kubectl delete $(kubectl get all | grep replicaset.apps | grep "0         0         0" | cut -d' ' -f 1)
@@ -126,7 +128,7 @@ Change namespace: kubens monitoring
 Untaint master: kubectl taint nodes --all node-role.kubernetes.io/master-
 Run pod with ping and nslookup: kubectl run -it --rm --restart=Never --image=infoblox/dnstools:latest dnstools
 Decode base-64-encoded secret: echo "cm9vdA=="| base64 --decode
-
+Ping with ServiceName: curl sundayeveningchillig-clicksink100.scdf.svc.cluster.local:8080/actuator/health
 ((Erreichen von Services durch Pods aus anderen Namespaces: siehe /kafka-demo/k8s/clickhouse/clickhouseDB-service-in-scdf-ns.yml (Type: ExternalName, https://stackoverflow.com/a/44329470/3649685)
 
 #Bash cheatsheet
@@ -140,6 +142,8 @@ Vim-Search: /suchwort , dann Enter und mit n vorwaertssuche, N rueckwaertssuche
 2. Install-Button auf Webseite (unten rechts klein: DOwnload)
 3. In Verzeichnis dann values.yaml anpassen
 4. Installieren des Charts in neuem elk-Namespace: helm install filebeat . -n elk --create-namespace
+
+Helm Upgrade (hier am Beispiel Kafka Topic-Deletion zusaetzlich erlauben): helm upgrade --reuse-values --set deleteTopicEnable=true my-release bitnami/kafka
 
 #Install Kubens
 sudo vim /etc/apt/sources.list
@@ -164,6 +168,9 @@ In nginx-controller-deployment ergänzen:
 template:
   spec:
     hostNetwork: true (siehe Abschnitt "via the Host Network" -> https://kubernetes.github.io/ingress-nginx/deploy/baremetal/)
+	
+## Use custom cert and not generate new at every startup of ingress-controller
+https://kubernetes.github.io/ingress-nginx/user-guide/tls/#tls-secrets
 	
 # ELK
 Bei Filebeat: aus DaemonSet ressource-limits und requests entfernen	
@@ -203,3 +210,33 @@ sudo apt install ca-certificates
 Permission denied gradlew: git update-index --chmod=+x gradlew
 
 Restart after groupadd jenkins to dockergroup
+
+# Jib
+push to reg: gradle jib
+push to docker daemon: gradle jibDockerBuild
+build image as tar: gradle jibBuildTar
+
+Cert in Java: https://stackoverflow.com/questions/57812972/failure-on-push-to-docker-registry-using-mvn-compile-jibbuild
+
+# Gradle
+Show all Tasks: .\gradlew tasks --all
+
+docker run -d --env PORT=4334 --env RESOURCEPATH=/UA/MyLittleServer --env OPCUAHOSTNAME=localhost -p 4334:4334 core.harbor.domain/library/mylittleopcua
+
+Run project aus Root-Verzeichnis: .\gradlew clickhouseSinkDemo:bootRun
+
+Show project structure (Aufruf aus Root-Verzeichnis own-opcua:  .\gradlew -q projects
+
+Root project 'own-opcua'
++--- Project ':clickhouseSinkDemo'
++--- Project ':commons'
+\--- Project ':opcuaDemo'
+
+# Install zsh
+https://stackoverflow.com/a/25763071/3649685
+
+#Notes
+SCDF erlaubt Updates (gleicher AppName, anderer Tag), im Stream kann dann auf neue Version geswitcht werden
+Dabei treten keine Verluste von Werten auf (nahtloser Übergang)
+- Altes Programm läuft weiter, neues joint der gleichen Consumer-Group und bekommt dann Partition assigned
+- Auch in DB (für Fall clicksink) landen nur alle Werte einmal (keine Verluste, keine Dopplungen)
