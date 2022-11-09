@@ -318,6 +318,7 @@ config:
         Host elasticsearch-master
         Logstash_Format On
         Retry_Limit False
+        logstash_prefix fluent-bit
         Index fluent_bit
 
 
