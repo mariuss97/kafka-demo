@@ -280,8 +280,8 @@ config:
   service: |
     [SERVICE]
         Daemon Off
-        Flush {{ .Values.flush }}
-        Log_Level {{ .Values.logLevel }}
+        Flush 5
+        Log_Level trace
         Parsers_File parsers.conf
         Parsers_File custom_parsers.conf
         HTTP_Server On
@@ -318,6 +318,7 @@ config:
         Host elasticsearch-master
         Logstash_Format On
         Retry_Limit False
+        Index fluent_bit
 
 
   ## https://docs.fluentbit.io/manual/administration/configuring-fluent-bit/classic-mode/upstream-servers
