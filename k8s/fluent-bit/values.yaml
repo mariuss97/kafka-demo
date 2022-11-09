@@ -329,9 +329,9 @@ config:
   ## https://docs.fluentbit.io/manual/pipeline/parsers
   customParsers: |
     [PARSER]
-        Name json
-        Format json
-        keep_time_key true
+        Name         docker
+        Format       json
+        Decode_Field_As    escaped     log
         
         
 # #[PARSER]
