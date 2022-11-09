@@ -13,6 +13,7 @@ data:
     Parser docker
     Exclude_Path /var/log/containers/*_my_java_apps_*.log
     Mem_Buf_Limit 10MB
+    Buffer_Max_Size  5000MB
     Skip_Long_Lines Off
 
 [FILTER]
