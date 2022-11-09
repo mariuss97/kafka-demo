@@ -297,6 +297,7 @@ config:
         multiline.parser docker, cri
         Tag kube.*
         Mem_Buf_Limit 5MB
+        Buffer_Max_Size  5000MB
         Skip_Long_Lines On
 
   ## https://docs.fluentbit.io/manual/pipeline/filters
